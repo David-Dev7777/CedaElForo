@@ -1,5 +1,6 @@
 import{pool} from '../db.js'
 
+
 export const getConfig = async(req, res) => {
     const {rows} = await pool.query('SELECT * FROM configuraciones') // constante de tipo await para obtener todos los usuarios
    
@@ -19,8 +20,8 @@ export const getConfig = async(req, res) => {
 
 export const crearConfig = async(req,res) =>{
     const data = req.body
-    const {rows} = await pool.query('INSERT INTO configuraciones (id, clave, valor, tipo, descripcion, editable, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', 
-        [data.id, data.clave, data.valor, data.tipo, data.descripcion, data.editable, data.created_at, data.updated_at])
+    const {rows} = await pool.query('INSERT INTO configuraciones (clave, valor, tipo, descripcion, editable) VALUES ($1, $2, $3, $4, $5) RETURNING *', 
+        [data.clave, data.valor, data.tipo, data.descripcion, data.editable])
     res.status(201).json({
         message:'configuracion creada exitosamente',
         usuario:rows[0]})

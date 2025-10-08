@@ -19,11 +19,11 @@ export const getLeyes1 = async(req, res) => {
 
 export const crearLey = async(req,res) =>{
     const data = req.body
-    const {rows} = await pool.query('INSERT INTO leyes (id, id_externo, titulo, contenido, categoria_id, numero_ley, fecha_publicacion, fecha_actualizacion, url_oficial, tags, metadata, activa, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *', 
-        [data.id, data.id_externo, data.titulo, data.contenido, data.categoria_id, data.numero_ley, data.fecha_publicacion, data.fecha_actualizacion, data.url_oficial, data.tags, data.metadata, data.activa, data.created_at])
+    const {rows} = await pool.query('INSERT INTO leyes (id_externo, titulo, contenido, categoria_id, numero_ley, fecha_publicacion, url_oficial, activa) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', 
+        [data.id_externo, data.titulo, data.contenido, data.categoria_id, data.numero_ley, data.fecha_publicacion, data.url_oficial, data.activa])
     res.status(201).json({
         message:'ley creada exitosamente',
-        usuario:rows[0]})
+        ley:rows[0]})
     
 }
 
@@ -42,12 +42,12 @@ export const eliminarley = async(req, res) => {
 export const actualizarLey = async(req,res) =>{
     const{id} = req.params // extreamos el id
     const data = req.body
-    const {rows} = await pool.query('UPDATE leyes SET id_externo=$2, titulo=$3, contenido=$4, categoria_id=$5, numero_ley=$6, fecha_publicacion=$7, fecha_actualizacion=$8, url_oficial=$9, tags=$10, metadata=$11, activa=$12, created_at=$13 WHERE id=$1  RETURNING *',
-         [ id, data.id_externo, data.titulo, data.contenido, data.categoria_id, data.numero_ley, data.fecha_publicacion, data.fecha_actualizacion, data.url_oficial, data.tags, data.metadata, data.activa, data.created_at])
+    const {rows} = await pool.query('UPDATE leyes SET id_externo=$2, titulo=$3, contenido=$4, categoria_id=$5, numero_ley=$6, url_oficial=$7, activa=$8, created_at=$9 WHERE id=$1  RETURNING *',
+         [id ,data.id_externo, data.titulo, data.contenido, data.categoria_id, data.numero_ley, data.url_oficial, data.activa, data.created_at])
        
     return res.json({
         message:'ley actualizada',
-        usuario:rows[0]})
+        ley:rows[0]})
     
 
 }
