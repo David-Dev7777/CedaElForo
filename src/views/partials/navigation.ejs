@@ -1,17 +1,23 @@
 <nav>
     <ul>
         <li>
-            <a href="/">home</a>
-    </li>
-    <li> <a href="/leyes"> leyes</a></li>
-    <li>
-        <a href="/fiscalizacion">fiscalizacion</a>
-    </li>
-      <li>
-        <a href="/perfil_usuario">perfil del usuario</a>
-    </li>
-     <li>
-        <a href="/configuracion_sistema">configuracion_sistema</a>
-    </li>
-</ul>
-</nav>
+            <a href="/principal">Home</a>
+        </li>
+        <li>
+            <a href="/leyes">Leyes</a>
+        </li>
+        <li>
+            <a href="/fiscalizacion">Fiscalización</a>
+        </li>
+        <li>
+            <a href="/perfil_usuario">Perfil del Usuario</a>
+        </li>
+        <li>
+            <a href="/configuracion_sistema">Configuración Sistema</a>
+        </li>
+        <% if (typeof user !== 'undefined') { %>
+            <li>
+                <a href="/logout">Cerrar Sesión (<%= user %>)</a>
+            </li>
+        <% } %>
+    </ul>
