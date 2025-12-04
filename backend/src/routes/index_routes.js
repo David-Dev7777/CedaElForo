@@ -1,5 +1,10 @@
 import { Router } from 'express'
+import axios from 'axios'
+import { XMLParser } from 'fast-xml-parser'
+import he from 'he'; 
+//import { path } from 'path'
 
+import {registro} from '../controllers/controlador_registro.js'
 import{getUsuario_id, getUsuarios, crearUsuario, eliminarUsuario, actualizarUsuario} from '../controllers/controlador_usuarios.js'
 import{ getLeyes1, getLey, crearLey, actualizarLey, eliminarley } from '../controllers/controlador_leyes.js'
 import{getPerfil, getPerfiles, crearPerfil, eliminarPerfil, actualizarPerfil} from '../controllers/controlador_perfiles.js'
@@ -13,11 +18,11 @@ import{getReacciones, getReacciones_id, crearReacciones, actualizarReacciones, e
 import{getModeraciones, getModeraciones_id, crearModeraciones, actualizarModeraciones, eliminarModeraciones} from '../controllers/controlador_moderaciones.js'
 import{getPublicacionesForo, getPublicacionesForos_id, crearPublicacionesForo, actualizarPublicacionesForo, eliminarPublicacionesForo} from '../controllers/controlador_publicacionesForo.js'
 import{validarCuerpo} from '../middlewares/validar_schema.js'
-import { schema_usuario } from '../models/schema_usuario.js'
+import { modelo_usuario } from '../models/schema_usuario.js'
 import{configSchema1} from '../models/schema_configuraciones.js'
 import { schema_leyes } from '../models/schema_leyes.js'
 
-import{authenticateUser, updateLastLogin, hashPassword} from '../models/authModel.js'
+import{authenticateUser, updateLastLogin} from '../models/authModel.js'
 //import{requireAuth} from '../middlewares/Aut_jwt.js'
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config.js';
@@ -70,27 +75,25 @@ const sanitize = (str) => {
 router.get('/login', (req, res) => {
   // Verificar si req.session existe antes de acceder a sus propiedades
   if (req.session && req.session.user) {
-    return res.redirect('/principal');
+    return res.redirect('/home');
   }
   res.render('login', { error: null });
 });
 
 // Procesar login CON BASE DE DATOS
 router.post('/login', async (req, res) => {
-     const username = sanitize(req.body.username);
+     const email = sanitize(req.body.email);
     const password = sanitize(req.body.password);
-  
-
 
   try {
-    console.log('Intento de login:', username);
+    console.log('Intento de login:', email);
     
     // Validar credenciales en la base de datos
-    const user = await authenticateUser(username, password);
+    const user = await authenticateUser(email, password);
 
     if (user && user.blocked) {
-      console.log('Acceso denegado: usuario bloqueado', username);
-      return res.render('login', { error: 'Cuenta bloqueada por intentos fallidos. Contacte al administrador.' });
+      console.log('Acceso denegado: usuario bloqueado', email);
+      return res.status(401).json({ error: 'Usuario o contraseña incorrectos, excediste el maximo permitido' });
     }
 
     if (user) {
@@ -124,12 +127,13 @@ router.post('/login', async (req, res) => {
       });
 
       console.log('Login exitoso para:', user.email);
-      return res.redirect('/principal');
+      //return res.redirect('/principal');
+      return res.status(200).json({ message: 'Login exitoso' })
     }
     
   // Credenciales incorrectas
-  console.log('Login fallido para:', username);
-  res.render('login', { error: 'Usuario o contraseña incorrectos' });
+  console.log('Login fallido para:', email);
+ return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
     
   } catch (error) {
     console.error('Error en login:', error);
@@ -179,8 +183,8 @@ router.get('/logout', (req, res) => {
 router.get('/usuarios', getUsuarios )
 router.get('/usuarios/:id', getUsuario_id)
 router.delete('/usuarios/:id', eliminarUsuario)
-router.post('/usuarios',validarCuerpo(schema_usuario),crearUsuario)
-router.put('/usuarios/:id',validarCuerpo(schema_usuario),actualizarUsuario)
+router.post('/usuarios', validarCuerpo(modelo_usuario),crearUsuario)
+router.put('/usuarios/:id',validarCuerpo(modelo_usuario),actualizarUsuario)
 
 router.get("/leyesFavoritas",getLeyesFavoritas)
 router.get("/leyesFavoritas/:id",getLeyesFavoritas_id)
@@ -188,7 +192,9 @@ router.post("/leyesFavoritas",crearLeyesFavoritas)
 router.put("/leyesFavoritas/:id",actualizarLeyesFavoritas)
 router.delete("/leyesFavoritas/:id",eliminarleyesFavoritas)
 
-router.get('/leyes', getLeyes1)
+router.get('/leyes', getLeyes1,(req, res) => {
+    res.render('leyes')
+})
 router.get('/leyes/:id', getLey)
 router.post('/leyes',validarCuerpo(schema_leyes) ,crearLey)
 router.put('/leyes/:id', validarCuerpo(schema_leyes),actualizarLey)
@@ -248,6 +254,58 @@ router.post('/publicacionesForo', crearPublicacionesForo)
 router.put('/publicacionesForo/:id', actualizarPublicacionesForo)
 router.delete('/publicacionesForo/:id', eliminarPublicacionesForo)
 
+router.post('/registro', registro)
+
+// Función de decodificación recursiva
+function decodeJsonStrings(obj) {
+    if (typeof obj !== 'object' || obj === null) {
+        // Si no es un objeto (ni un array) o es null, devuelve el valor.
+        // Si es una cadena, la decodifica.
+        return typeof obj === 'string' ? he.decode(obj) : obj;
+    }
+
+    if (Array.isArray(obj)) {
+        // Si es un array, recorre cada elemento.
+        return obj.map(item => decodeJsonStrings(item));
+    }
+
+    // Si es un objeto, recorre todas sus claves.
+    const newObj = {};
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            newObj[key] = decodeJsonStrings(obj[key]);
+        }
+    }
+    return newObj;
+}
+
+
+router.get('/ley-transito', async (req, res) => {
+    try {
+        const url = 'https://www.leychile.cl/Consulta/obtxml?opt=7&idNorma=1007469';
+        
+        // 1. Consumir la API (XML)
+        const response = await axios.get(url);
+        const xmlData = response.data;
+
+        // 2. Convertir XML a JSON
+        const parser = new XMLParser({
+            ignoreAttributes: false,
+            attributeNamePrefix: "@_" 
+        });
+        const jsonData = parser.parse(xmlData);
+
+        // 3. ✨ NUEVO PASO: Decodificar todas las cadenas de texto en el JSON
+        const cleanJsonData = decodeJsonStrings(jsonData.Norma);
+
+        // 4. Responder al frontend con JSON limpio
+        res.json(cleanJsonData);
+
+    } catch (error) {
+        console.error('Error al obtener la ley:', error);
+        res.status(500).json({ error: 'Error al obtener la información de la BCN' });
+    }
+});
 
 
 

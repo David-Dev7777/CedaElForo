@@ -8,6 +8,3 @@ export const pool = new PG.Pool({
     port:"5432"
 });
 
-/*pool.query('SELECT NOW()').then(result =>{
-    console.log(result)
-})*/

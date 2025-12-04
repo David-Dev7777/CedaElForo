@@ -1,4 +1,6 @@
 import{pool} from '../db.js'
+import bcrypt from 'bcryptjs'
+import { modelo_usuario } from '../models/schema_usuario.js'
 
 export const getUsuarios = async(req, res) => {
     const {rows} = await pool.query('SELECT * FROM usuarios') // constante de tipo await para obtener todos los usuarios
@@ -18,13 +20,39 @@ export const getUsuarios = async(req, res) => {
 }
 
 export const crearUsuario = async(req,res) =>{
-    const data = req.body
-    const {rows} = await pool.query('INSERT INTO usuarios ( email, password_hash, nombre, apellido, tipo_usuario, activo) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', 
-        [data.email, data.password_hash, data.nombre, data.apellido, data.tipo_usuario, data.activo])
-    res.status(201).json({
-        message:'usuario creado exitosamente',
-        usuario:rows[0]})
-    
+    // Validar cuerpo
+    const {error, value} = modelo_usuario.validate(req.body, {abortEarly: false});
+    if (error) {
+        return res.status(400).json({
+            message: 'Error de validación',
+            details: error.details.map((detail) => detail.message),
+        });
+    }
+
+    const {email, password_hash, nombre, apellido, tipo_usuario, activo} = value;
+
+    try {
+        const password_encriptada = await bcrypt.hash(password_hash, 12);
+        const {rows} = await pool.query(
+            'INSERT INTO usuarios ( email, password_hash, nombre, apellido, tipo_usuario, activo) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', 
+            [email, password_encriptada, nombre, apellido, tipo_usuario, activo]
+        );
+
+        return res.status(201).json({
+            message: 'usuario creado exitosamente',
+            usuario: rows[0]
+        });
+    } catch (err) {
+        // Loguear el error completo para depuración
+        console.error('Error en crearUsuario:', err && err.stack ? err.stack : err);
+
+        // Detectar errores comunes de Postgres (por ejemplo, violación de constraint UNIQUE)
+        if (err && err.code === '23505') {
+            return res.status(409).json({ message: 'El correo ya está registrado.' });
+        }
+
+        return res.status(500).json({ message: 'Error interno al crear usuario.' });
+    }
 }
 
 export const eliminarUsuario = async(req, res) => {
