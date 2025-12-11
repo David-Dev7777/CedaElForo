@@ -1,11 +1,14 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { User } from 'lucide-react';
 
 // Importa tus componentes de página
 import VisorLey from './page/VisorLey.jsx'; 
 import Login from './page/login.jsx'; 
+import  {NavMenu} from'./page/menu.jsx';
 // Asume que Calendario contiene el DatePickerDropdown
 import Calendario from './page/calendario.jsx'; 
+import Registro from './page/Registro.jsx'
 
 // --- Componente simple para el Home ---
 const Home = () => (
@@ -21,39 +24,23 @@ const Home = () => (
   </div>
 );
 
+const mainNavLinks = [
+    { to: "/ley-transito", label: "Ley de Tránsito", isButton: false },
+    { to: "/calendario", label: "Calendario", isButton: false },
+    { to: "/login", label: "Iniciar Sesión", isButton: true , icon: User, User},
+]
+
+const loginNavLinks = [
+    { to: "/registro", label: "registro", isButton: false },
+    { to: "/login", label: "Iniciar Sesión", isButton: true },
+]
+
 // --- Componente Principal de la Aplicación ---
 export function App() {
   return (
     <BrowserRouter>
       {/* Barra de navegación optimizada */}
-      <nav className="bg-gray-800 text-white p-4 shadow-lg">
-        <ul className="flex gap-6 items-center max-w-6xl mx-auto">
-          {/* Enlace de Marca/Inicio */}
-          <li>
-            <Link to="/" className="text-lg font-bold hover:text-gray-300 transition duration-100">Portal</Link>
-          </li>
-          
-          {/* Enlaces de Contenido - El ml-auto anterior se quita para que se agrupen */}
-          <li>
-            <Link to="/ley-transito" className="hover:text-gray-300 transition duration-100">Ley de Tránsito</Link>
-          </li>
-          
-          {/* Nuevo enlace de Calendario */}
-          <li>
-            <Link to="/calendario" className="hover:text-gray-300 transition duration-100">Calendario</Link>
-          </li>
-          
-          {/* Enlace de Acción (Login) - Usa ml-auto para empujarlo a la derecha */}
-          <li className="ml-auto">
-            <Link 
-              to="/login" 
-              className="px-3 py-1 bg-blue-600 rounded hover:bg-blue-500 transition duration-100 font-semibold"
-            >
-              Login
-            </Link>
-          </li>
-        </ul>
-      </nav>
+      <NavMenu title="Portal Legal" links={mainNavLinks} /> 
 
       {/* Definición de Rutas */}
       <main className="max-w-6xl mx-auto p-4">
@@ -62,6 +49,7 @@ export function App() {
           <Route path="/ley-transito" element={<VisorLey />} />
           <Route path="/calendario" element={<Calendario />} /> {/* Nueva Ruta */}
           <Route path="/login" element={<Login />} /> 
+          <Route path="/registro" element={<Registro />} />
         </Routes>
       </main>
     </BrowserRouter>

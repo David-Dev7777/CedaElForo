@@ -3,6 +3,8 @@ import axios from 'axios';
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { User } from 'lucide-react';
+
 
 function LoginForm() {
 
@@ -56,7 +58,7 @@ function LoginForm() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Iniciar Sesión</h2>
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Iniciar Sesión </h2>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
