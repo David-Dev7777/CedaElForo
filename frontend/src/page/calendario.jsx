@@ -1,38 +1,51 @@
-import DatePicker, { registerLocale } from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import React, { useState } from 'react';
-import es from 'date-fns/locale/es';
+import { useEffect, useState } from 'react';
 
-registerLocale('es', es);
+function CalendarioFeriados({ feriados }) {
+  const [mes, setMes] = useState(new Date().getMonth());
+  const [anyo, setAnyo] = useState(new Date().getFullYear());
 
-function Calendario() {
-  const [selectedDate, setSelectedDate] = useState(new Date()); // 👈 inicia en el mes actual
+  const feriadosSet = new Set(feriados.map(f => f.date));
+
+  const diasMes = new Date(anyo, mes + 1, 0).getDate();
+  const primerDia = new Date(anyo, mes, 1).getDay();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          Selecciona una Fecha
+    <div className="w-80 mx-auto">
+      <div className="flex justify-between items-center mb-4">
+        <button onClick={() => setMes(m => m === 0 ? 11 : m - 1)}>◀</button>
+        <h2 className="font-bold">
+          {new Date(anyo, mes).toLocaleString('es-CL', { month: 'long' })} {anyo}
         </h2>
+        <button onClick={() => setMes(m => m === 11 ? 0 : m + 1)}>▶</button>
+      </div>
 
-        <DatePicker
-          selected={selectedDate}
-          onChange={(date) => setSelectedDate(date)}
-          locale="es"
-          dateFormat="dd/MM/yyyy"
-          showPopperArrow={false}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          placeholderText="Haz clic para seleccionar una fecha"
-        />
+      <div className="grid grid-cols-7 gap-2 text-center">
+        {['D','L','M','M','J','V','S'].map(d => (
+          <div key={d} className="font-bold">{d}</div>
+        ))}
 
-        {selectedDate && (
-          <p className="mt-4 text-center text-gray-700">
-            Fecha seleccionada: {selectedDate.toLocaleDateString('es-ES')}
-          </p>
-        )}
+        {Array(primerDia).fill(null).map((_, i) => <div key={i} />)}
+
+        {Array.from({ length: diasMes }, (_, i) => {
+          const dia = i + 1;
+          const fecha = `${anyo}-${String(mes + 1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+
+          return (
+            <div
+              key={fecha}
+              className={`p-2 rounded ${
+                feriadosSet.has(fecha)
+                  ? 'bg-red-500 text-white font-bold'
+                  : ''
+              }`}
+            >
+              {dia}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-export default Calendario;
+export default CalendarioFeriados;
