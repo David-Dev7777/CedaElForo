@@ -12,11 +12,11 @@ import Registro from './page/Registro.jsx'
 import Footer from './components/Footer.jsx';
 import Hero from './components/Hero.jsx';
 import Home from './components/Home.jsx';
-
+import Feriados from './page/Feriados.jsx';
 
 const mainNavLinks = [
     { to: "/ley-transito", label: "Ley de Tránsito", isButton: false },
-    { to: "/calendario", label: "Calendario", isButton: false },
+    { to: "/Feriados.jsx", label: "Feriados Chile", isButton: false },
     { to: "/login",  isButton: true , icon: User},
 ]
 
@@ -34,7 +34,7 @@ export function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/ley-transito" element={<VisorLey />} />
-          <Route path="/calendario" element={<Calendario />} /> {/* Nueva Ruta */}
+          <Route path="/Feriados.jsx" element={<Feriados />} /> {/* Nueva Ruta */}
           <Route path="/login" element={<Login />} /> 
           <Route path="/registro" element={<Registro />} />
         </Routes>
