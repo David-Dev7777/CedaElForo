@@ -9,10 +9,12 @@ import{PORT} from './config.js'// variable del puerto configurada desde config.j
 import morgan from 'morgan'
 
 
+
 const app = express()
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
 
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const port = process.env.PORT || 4000;//ahora el puerto se toma del archivo .env o por defecto 4000
 
 app.set('view engine','ejs')
 app.set('views',join(__dirname,'views'))
@@ -44,4 +46,4 @@ app.use(express.static(join(__dirname,'public')))
 
 
 app.listen(PORT)
-console.log('servidor escuchando en el puerto', PORT)
+console.log('servidor escuchando en el puerto', PORT);

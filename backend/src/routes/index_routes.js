@@ -2,6 +2,7 @@ import { Router } from 'express'
 import axios from 'axios'
 import { XMLParser } from 'fast-xml-parser'
 import he from 'he'; 
+
 //import { path } from 'path'
 
 import {registro} from '../controllers/controlador_registro.js'
@@ -22,44 +23,17 @@ import { modelo_usuario } from '../models/schema_usuario.js'
 import{configSchema1} from '../models/schema_configuraciones.js'
 import { schema_leyes } from '../models/schema_leyes.js'
 
+
 import{authenticateUser, updateLastLogin} from '../models/authModel.js'
-//import{requireAuth} from '../middlewares/Aut_jwt.js'
+import  {requireAuth}  from '../middlewares/Aut_jwt.js';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config.js';
 import session from 'express-session'
 
 
+
 const router = Router()
 
-
-
-// Middleware para verificar autenticación
-// Prioriza token JWT en cookie; si no existe, usa req.session.user
-export const requireAuth = (req, res, next) => {
-  try {
-    const token = req.cookies?.token;
-    if (token) {
-      const payload = jwt.verify(token, JWT_SECRET);
-      req.user = payload; // ← Asegura que req.user esté disponible
-      req.session.user = req.session.user || {};
-      req.session.user.id = payload.id;
-      req.session.user.email = payload.email;
-      req.session.user.nombre = payload.nombre;
-      req.session.user.apellido = payload.apellido;
-      req.session.user.tipo_usuario = payload.tipo_usuario;
-      return next();
-    }
-  } catch (err) {
-    console.log('Token JWT inválido o expirado:', err.message);
-  }
-
-  if (req.session.user) {
-    req.user = req.session.user; // ← También aquí
-    return next();
-  }
-
-  res.redirect('/login');
-};
 
 // Ruta raíz - redirige al login
 router.get('/', (req, res) => {
@@ -127,7 +101,7 @@ router.post('/login', async (req, res) => {
       });
 
       console.log('Login exitoso para:', user.email);
-      //return res.redirect('/principal');
+      console.log('cookueies:', req.cookies); 
       return res.status(200).json({ message: 'Login exitoso' })
     }
     
@@ -143,7 +117,7 @@ router.post('/login', async (req, res) => {
 
 
 // Ruta principal después del login
-router.get('/principal', requireAuth, (req, res) => {
+router.get('/principal',  requireAuth , (req, res) => {
   try {
     console.log('=== ACCEDIENDO A /principal ===');
     console.log('req.user:', req.user);

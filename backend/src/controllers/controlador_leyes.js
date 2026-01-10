@@ -1,4 +1,4 @@
-import{pool} from '../db.js'
+import{pool} from '../config.js'
 
 export const getLeyes1 = async(req, res) => {
     const {rows} = await pool.query('SELECT * FROM leyes') // constante de tipo await para obtener todos los usuarios

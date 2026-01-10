@@ -1,4 +1,4 @@
-import{pool} from '../db.js'
+import{pool} from '../config.js' //importamos la conexion a la base de datos
 
 export const getCategoriasForo = async(req, res) => {
     const {rows} = await pool.query('SELECT * FROM categorias_foro') // constante de tipo await para obtener todos los usuarios

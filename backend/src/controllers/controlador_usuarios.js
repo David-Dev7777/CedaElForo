@@ -1,4 +1,4 @@
-import{pool} from '../db.js'
+import{pool} from '../config.js'
 import bcrypt from 'bcryptjs'
 import { modelo_usuario } from '../models/schema_usuario.js'
 
@@ -34,8 +34,8 @@ export const crearUsuario = async(req,res) =>{
     try {
         const password_encriptada = await bcrypt.hash(password_hash, 12);
         const {rows} = await pool.query(
-            'INSERT INTO usuarios ( email, password_hash, nombre, apellido, tipo_usuario, activo) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', 
-            [email, password_encriptada, nombre, apellido, tipo_usuario, activo]
+            'INSERT INTO usuarios ( email, password_hash, nombre, apellido, tipo_usuario, activo) VALUES ($1, $2, $3, $4, $5) RETURNING *', 
+            [email,  nombre, apellido, tipo_usuario, activo]
         );
 
         return res.status(201).json({
