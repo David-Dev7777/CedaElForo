@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser())
 app.use(session({ 
-  secret: 'mi-clave-secreta',
+  secret: '5799d51ec6bbb78adf8098229276610baee66028013b06e9cdb1ad46dbb396fbebad2810ced44ebb352fad20e6fa90bca3ed0f359e0791b0b7575b5c8aabf753',
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false }

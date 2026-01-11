@@ -1,4 +1,4 @@
-import{pool} from '../db.js'
+import{pool} from '../config.js';
 import bcrypt from 'bcryptjs';
 
 // Límite de intentos fallidos antes de bloquear (configurado a 3 según requerimiento)

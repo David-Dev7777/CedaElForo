@@ -1,4 +1,4 @@
-import{pool} from '../db.js'
+import{pool} from '../config.js'
 import bcrypt from 'bcryptjs'
 import Joi from 'joi'
 import { modelo_usuario } from '../models/schema_usuario.js'
