@@ -27,17 +27,21 @@ const Footer = ({ nombreEmpresa }) => {
         {/* Navegación del Footer */}
         <nav className="space-x-4">
           <a 
-            href="/politica-privacidad" 
+            href="/politica-privacidad"
+            target='_blank'
+            rel="noopener noreferrer"
             // text-gray-400: Enlaces de color gris claro
             // hover:text-white: Se vuelven blancos al pasar el mouse
-            className="text-gray-400 hover:text-white transition duration-300"
+            className="text-white hover:text-gray-400 active:text-gray-600 transition duration-150"
           >
             Política de Privacidad
           </a>
-          <span className="text-gray-600">|</span> 
+          <span className="text-white">|</span> 
           <a 
-            href="/terminos-uso" 
-            className="text-gray-400 hover:text-white transition duration-300"
+            href="/terminos-uso"
+            target='_blank'
+            rel="noopener noreferrer"
+            className="text-white hover:text-gray-400 active:text-gray-600 transition duration-150"
           >
             Términos de Uso
           </a>

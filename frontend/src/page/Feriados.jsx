@@ -73,7 +73,7 @@ function Feriados() {
             onClick={mesAnterior}
             className="px-3 py-1 border rounded cursor-pointer hover:bg-neutral-300 active:bg-neutral-400 transition"
           >
-            ◀
+            ←
           </button>
 
           <h2 className="font-bold capitalize">
@@ -87,7 +87,7 @@ function Feriados() {
             onClick={mesSiguiente}
             className="px-3 py-1 border rounded cursor-pointer hover:bg-neutral-300 active:bg-neutral-400 transition"
           >
-            ▶
+            →
           </button>
         </div>
 

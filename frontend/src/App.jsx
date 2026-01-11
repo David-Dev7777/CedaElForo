@@ -20,15 +20,16 @@ import AdminUsuarios from './page/AdminUsuarios.jsx'
 import AdminRoute from './components/AdminRoute'
 import ForgotPassword from './page/ForgotPassword.jsx'
 import ResetPassword from './page/ResetPassword.jsx'
+import PoliticaPrivacidad from "./page/PoliticaPrivacidad.jsx";
+import TerminosUso from "./page/TerminosUso.jsx";
 
 const mainNavLinks = [
   { to: "/ley-transito", label: "Ley de Tránsito", isButton: false },
-  { to: "/Feriados.jsx", label: "Feriados Chile", isButton: false },
+  { to: "/feriados", label: "Feriados Chile", isButton: false },
   { to: "/foro", label: "Foro", isButton: false },
   { to: "/login", label: "Iniciar sesión", isButton: true , icon: User},
   { to: "/registro", label: "Registro", isButton: false }
 ]
-
 
 // --- Componente Principal de la Aplicación ---
 export function App() {
@@ -57,6 +58,13 @@ export function App() {
           <Route path="/foro" element={<ProtectedRoute><Foro /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><AdminUsuarios /></AdminRoute>} />
           {/* puedes añadir más rutas protegidas aquí */}
+          <Route path="/ley-transito" element={<VisorLey />} />
+          <Route path="/feriados" element={<Feriados />} /> {/* Nueva Ruta */}
+          <Route path="/foro" element={<Foro />} />
+          <Route path="/login" element={<Login />} /> 
+          <Route path="/registro" element={<Registro />} />
+          <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
+          <Route path="/terminos-uso" element={<TerminosUso />} />
         </Routes>
       </main>
 
