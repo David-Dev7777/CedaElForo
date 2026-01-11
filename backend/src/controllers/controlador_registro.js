@@ -1,4 +1,4 @@
-import { pool } from '../db.js'
+import { pool } from '../config.js'
 import bcrypt from 'bcryptjs'
 
 export const registro = async (req, res) => {
