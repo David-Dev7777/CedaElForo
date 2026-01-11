@@ -1,0 +1,57 @@
+
+.follow-card {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    font-size: .8rem;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.follow-card-header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.follow-card-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.follow-card-usuario {
+    opacity: .6;
+}
+
+.follow-card-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 1000px;
+}
+
+.follow-card-button {
+    cursor: pointer;
+   margin-left: 16px;
+   border: 0;
+   border-radius: 999px;
+   padding: 6px 16px;
+   font-weight: bold;
+   border: 1px solid #000;
+    transition: 3s ease barackground-color;
+}
+
+.follow-card-button.is-following {
+    border: 1px solid red;
+
+}
+
+.follow-card-button.is-following:hover {
+  background-color: red;
+
+}
+
+.follow-card-button:hover {
+    background-color: #09f;
+    transition: 3s ease background-color;
+}
+/* Feriados de Chile */

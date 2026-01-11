@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEDA el Foro - Principal</title>
+    <%- include('partials/head')%>
+</head>
+<body>
+    <%- include('partials/navigation', { user: user }) %>
+    
+    <div style="padding: 20px;">
+        <h1>Bienvenido al Sistema CEDA el Foro</h1>
+        <p>Has iniciado sesión correctamente ✅</p>
+        
+        <!-- Información del usuario -->
+        <% if (user) { %>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <h3>Información del Usuario:</h3>
+                <p><strong>Nombre:</strong> <%= user.nombre %> <%= user.apellido %></p>
+                <p><strong>Email:</strong> <%= user.email %></p>
+                <p><strong>Tipo de usuario:</strong> <%= user.tipo_usuario %></p>
+                <p><strong>ID:</strong> <%= user.id %></p>
+            </div>
+        <% } else { %>
+            <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <p style="color: #856404;">⚠ No se pudo cargar la información del usuario</p>
+            </div>
+        <% } %>
+      
+    </div>
+</body>
+</html>
