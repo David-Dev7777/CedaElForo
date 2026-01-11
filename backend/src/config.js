@@ -4,6 +4,7 @@ dotenv.config();
 
 export const PORT = process.env.PORT || 5000;
 export const JWT_SECRET = process.env.JWT_SECRET || "cambiar esta clave en produccion";
+export const JWT_COOKIE = process.env.JWT_COOKIE || "token_cookie";
 
 export const pool = new PG.Pool({
   user: process.env.PGUSER,
