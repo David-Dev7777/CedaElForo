@@ -27,7 +27,7 @@ import{authenticateUser, updateLastLogin} from '../models/authModel.js'
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config.js';
 import session from 'express-session'
-import { pool } from '../db.js'
+import { pool } from '../config.js'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 
