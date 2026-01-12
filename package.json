@@ -29,6 +29,7 @@
     "pg": "^8.16.3"
   },
   "devDependencies": {
+    "@sonar/scan": "^4.3.4",
     "autoprefixer": "^10.4.22",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17"
