@@ -111,14 +111,6 @@ function PoliticaPrivacidad() {
           Privacidad cuando sea necesario. Cualquier cambio será informado
           oportunamente dentro de la plataforma.
         </p>
-
-        <h2 className="text-2xl font-semibold mt-6 mb-2">
-          7. Asesoría legal
-        </h2>
-
-        <p>
-          Ceda el Foro <strong>NO</strong> es .
-        </p>
       </div>
     </>
   );
