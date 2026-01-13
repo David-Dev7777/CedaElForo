@@ -59,12 +59,12 @@ export function App() {
           <Route path="/admin" element={<AdminRoute><AdminUsuarios /></AdminRoute>} />
           {/* puedes añadir más rutas protegidas aquí */}
           <Route path="/ley-transito" element={<VisorLey />} />
-          <Route path="/feriados" element={<Feriados />} /> {/* Nueva Ruta */}
+          <Route path="/feriados" element={<ProtectedRoute><Feriados /></ProtectedRoute >} /> {/* Nueva Ruta */}
           <Route path="/foro" element={<Foro />} />
           <Route path="/login" element={<Login />} /> 
           <Route path="/registro" element={<Registro />} />
-          <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
-          <Route path="/terminos-uso" element={<TerminosUso />} />
+          <Route path="/politica-privacidad" element={<ProtectedRoute><PoliticaPrivacidad /></ProtectedRoute>} />
+          <Route path="/terminos-uso" element={<ProtectedRoute><TerminosUso /></ProtectedRoute  >} />
         </Routes>
       </main>
 
