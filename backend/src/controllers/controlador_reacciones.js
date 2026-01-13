@@ -17,46 +17,57 @@ export const getReacciones = async(req, res) => {
     res.json(rows)
 }
 
-export const crearReacciones = async(req,res) =>{
-    const data = req.body
-    const { usuario_id, publicacion_id, comentario_id, tipo, created_at } = data
+export const crearReacciones = async (req, res) => {
+  const { usuario_id, publicacion_id, comentario_id, tipo, created_at } = req.body;
 
-    try {
-        // Buscar reacción existente del mismo usuario para la misma publicación/comentario
-        const existingRes = await pool.query(
-            `SELECT * FROM reacciones WHERE usuario_id = $1 AND publicacion_id = $2 AND ((comentario_id IS NULL AND $3 IS NULL) OR comentario_id = $3)`,
-            [usuario_id, publicacion_id, comentario_id]
-        )
+  try {
+    // ✅ Esta comparación funciona incluso cuando comentario_id es NULL
+    const existingRes = await pool.query(
+      `
+      SELECT *
+      FROM reacciones
+      WHERE usuario_id = $1
+        AND publicacion_id = $2
+        AND comentario_id IS NOT DISTINCT FROM $3::int
+      `,
+      [usuario_id, publicacion_id, comentario_id]
+    );
 
-        const existing = existingRes.rows[0]
+    const existing = existingRes.rows[0];
 
-        if (existing) {
-            // Si la misma reacción ya existe -> toggle (eliminar)
-            if (existing.tipo === tipo) {
-                await pool.query('DELETE FROM reacciones WHERE id = $1', [existing.id])
-                return res.json({ message: 'reacción eliminada', action: 'deleted', reaccion: existing })
-            }
+    if (existing) {
+      // toggle: si ya existe la misma reacción => eliminar
+      if (existing.tipo === tipo) {
+        await pool.query("DELETE FROM reacciones WHERE id = $1", [existing.id]);
+        return res.json({ message: "reacción eliminada", action: "deleted", reaccion: existing });
+      }
 
-            // Si existe pero es distinto tipo -> actualizar tipo y created_at
-            const { rows } = await pool.query(
-                'UPDATE reacciones SET tipo = $1, created_at = $2 WHERE id = $3 RETURNING *',
-                [tipo, created_at || new Date().toISOString(), existing.id]
-            )
-            return res.json({ message: 'reacción actualizada', action: 'updated', reaccion: rows[0] })
-        }
+      // si existe pero es otro tipo => actualizar
+      const { rows } = await pool.query(
+        "UPDATE reacciones SET tipo = $1, created_at = $2 WHERE id = $3 RETURNING *",
+        [tipo, created_at || new Date().toISOString(), existing.id]
+      );
 
-        // No existe: crear nueva reacción
-        const insertRes = await pool.query(
-            'INSERT INTO reacciones (usuario_id, publicacion_id, comentario_id, tipo, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [usuario_id, publicacion_id, comentario_id, tipo, created_at || new Date().toISOString()]
-        )
-        return res.status(201).json({ message: 'reacción agregada exitosamente', action: 'created', reaccion: insertRes.rows[0] })
-    } catch (err) {
-        console.error('Error en crearReacciones:', err)
-        return res.status(500).json({ message: 'Error interno al crear reacción' })
+      return res.json({ message: "reacción actualizada", action: "updated", reaccion: rows[0] });
     }
-    
-}
+
+    // crear nueva
+    const insertRes = await pool.query(
+      "INSERT INTO reacciones (usuario_id, publicacion_id, comentario_id, tipo, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [usuario_id, publicacion_id, comentario_id, tipo, created_at || new Date().toISOString()]
+    );
+
+    return res.status(201).json({
+      message: "reacción agregada exitosamente",
+      action: "created",
+      reaccion: insertRes.rows[0],
+    });
+  } catch (err) {
+    console.error("Error en crearReacciones:", err);
+    return res.status(500).json({ message: "Error interno al crear reacción" });
+  }
+};
+
 
 export const eliminarReacciones = async(req, res) => {
     const {id} = req.params
