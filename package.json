@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "node --watch backend/src/index.js",
-    "build:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
+    "build:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
+    "sonar": "node sonar-scanner.js"
   },
   "keywords": [],
   "author": "",
