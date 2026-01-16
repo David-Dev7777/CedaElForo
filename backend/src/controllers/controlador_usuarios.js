@@ -3,16 +3,37 @@ import bcrypt from 'bcryptjs'
 import Joi from 'joi'
 import { modelo_usuario } from '../models/schema_usuario.js'
 
-export const getUsuarios = async(req, res) => {
-    const {rows} = await pool.query('SELECT * FROM usuarios') // constante de tipo await para obtener todos los usuarios
-   
-    res.json(rows);
+export const getUsuarios = async (req, res) => {
+  const { rows } = await pool.query(`
+    SELECT 
+      id,
+      email,
+      nombre,
+      apellido,
+      tipo_usuario,
+      fecha_registro,
+      activo
+    FROM usuarios
+  `)
+
+  res.json(rows)
 }
 
  export const getUsuario_id = async(req, res) => {
-    const {id} = req.params //const para extraer el id
-    const {rows} = await pool.query(`SELECT * FROM usuarios WHERE id = ${id}`) // {rows} solo extraemos las filas
-
+    const { rows } = await pool.query(
+    `SELECT 
+        id,
+        email,
+        nombre,
+        apellido,
+        tipo_usuario,
+        fecha_registro,
+        activo,
+        ultimo_login
+    FROM usuarios
+    WHERE id = $1`,
+    [id]
+    )
      if(rows.length === 0){
         return res.status(404).json({message: 'usuario no encontrado '})
 
