@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node --watch backend/src/index.js",
     "build:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
-    "sonar": "node sonar-scanner.js"
+    "sonar": "sonar-scanner"
   },
   "keywords": [],
   "author": "",
@@ -33,6 +33,7 @@
     "@sonar/scan": "^4.3.4",
     "autoprefixer": "^10.4.22",
     "postcss": "^8.5.6",
+    "sonar-scanner": "^3.1.0",
     "tailwindcss": "^4.1.17"
   }
 }

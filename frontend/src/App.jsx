@@ -54,12 +54,12 @@ export function App() {
 
           {/* Rutas protegidas (requieren sesión/JWT) */}
           <Route path="/ley-transito" element={<ProtectedRoute><VisorLey /></ProtectedRoute>} />
-          <Route path="/Feriados.jsx" element={<ProtectedRoute><Feriados /></ProtectedRoute>} /> {/* Nueva Ruta */}
+          <Route path="/Feriados.jsx" element={<ProtectedRoute><Feriados /></ProtectedRoute>} /> 
           <Route path="/foro" element={<ProtectedRoute><Foro /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><AdminUsuarios /></AdminRoute>} />
           {/* puedes añadir más rutas protegidas aquí */}
           <Route path="/ley-transito" element={<VisorLey />} />
-          <Route path="/feriados" element={<ProtectedRoute><Feriados /></ProtectedRoute >} /> {/* Nueva Ruta */}
+          <Route path="/feriados" element={<ProtectedRoute><Feriados /></ProtectedRoute >} />
           <Route path="/foro" element={<Foro />} />
           <Route path="/login" element={<Login />} /> 
           <Route path="/registro" element={<Registro />} />
