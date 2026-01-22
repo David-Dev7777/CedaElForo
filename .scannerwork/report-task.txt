@@ -1,6 +1,0 @@
-projectKey=ceda-el-foro
-serverUrl=http://localhost:9000
-serverVersion=25.12.0.117093
-dashboardUrl=http://localhost:9000/dashboard?id=ceda-el-foro
-ceTaskId=24f11a72-b931-4bfd-a6ef-636f62c082df
-ceTaskUrl=http://localhost:9000/api/ce/task?id=24f11a72-b931-4bfd-a6ef-636f62c082df
