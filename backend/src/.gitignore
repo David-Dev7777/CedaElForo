@@ -2,4 +2,4 @@ node_modules/
 .pnpm/
 .env
 .scannerwork/
-.sonar-project.properties
+sonar-project.properties
