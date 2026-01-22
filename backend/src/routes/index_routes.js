@@ -26,6 +26,7 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET, pool } from '../config.js';
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
+import session from 'express-session';
 
 
 const router = Router()
@@ -203,22 +204,27 @@ router.put('/usuarios/:id', requireAuth, adminOnly, actualizarUsuario)
 router.post('/usuarios/:id/unlock', requireAuth, adminOnly, async (req, res) => {
   const { id } = req.params
   try {
-    // Intentar actualizar failed_attempts si la columna existe
-    try {
-      const { rows } = await pool.query('UPDATE usuarios SET failed_attempts = 0, activo = true WHERE id = $1 RETURNING *', [id])
-      if (rows && rows[0]) return res.json({ ok: true, usuario: rows[0] })
-    } catch (err) {
-      // Si la columna failed_attempts no existe, solo actualizar activo
+    const { rows } = await pool.query(
+      'UPDATE usuarios SET failed_attempts = 0, activo = true WHERE id = $1 RETURNING *',
+      [id]
+    )
+    const usuarios = rows[0]
+    if (usuarios) {
+      return res.json({ ok: true, usuario: rows[0] })
+    }
+  } catch (err) {
+    // Manejar específicamente el error de columna inexistente
+    if (err.code === '42703') { // PostgreSQL: undefined_column
       await pool.query('UPDATE usuarios SET activo = true WHERE id = $1', [id])
       const { rows } = await pool.query('SELECT * FROM usuarios WHERE id = $1', [id])
       return res.json({ ok: true, usuario: rows[0] })
     }
-  } catch (err) {
-    console.error('Error desbloqueando usuario:', err)
-    return res.status(500).json({ error: 'Error desbloqueando usuario' })
+    // Otros errores se propagan al catch externo
+    throw err
   }
-})
 
+  return res.status(404).json({ error: 'Usuario no encontrado' })
+})
 // Endpoint: solicitar token de reseteo de contraseña
 router.post('/forgot-password', async (req, res) => {
   const email = sanitize(req.body.email)
