@@ -374,10 +374,10 @@ router.get('/ley-transito', async (req, res) => {
 // Proxy para evitar CORS al llamar al webhook de n8n desde el frontend
 router.post('/chat-proxy', async (req, res) => {
   try {
-    const webhook = process.env.N8N_WEBHOOK_URL || 'https://tattooshop.app.n8n.cloud/webhook/3b600698-67d3-403f-9cd5-4b33b95c73e7/chat'
+    const webhook = process.env.N8N_WEBHOOK_URL || 'https://davidlozano31.app.n8n.cloud/webhook/9b3ba493-e926-4d2e-8921-679cbe6b84fd/chat'
     const response = await axios.post(webhook, req.body, {
       headers: { 'Content-Type': 'application/json' },
-      timeout: 15000,
+      timeout: 45000,
     })
 
     // Reenviamos la respuesta del webhook al frontend
