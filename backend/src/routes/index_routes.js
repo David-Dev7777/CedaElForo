@@ -4,6 +4,7 @@ import { XMLParser } from 'fast-xml-parser'
 import he from 'he'; 
 
 import {registro} from '../controllers/controlador_registro.js'
+import{getCategoriasForo, getCategoriasForo_id, crearCategoriasForo, eliminarCategoriasForo, actualizarCategoriasForo} from '../controllers/controlador_categoriasForo.js'  
 import{getUsuario_id, getUsuarios, crearUsuario, eliminarUsuario, actualizarUsuario} from '../controllers/controlador_usuarios.js'
 import{getComentarios, getComentarios_id, crearComentarios, actualizarComentarios, eliminarComentarios} from '../controllers/controlador_comentarios.js'
 import{getReacciones, getReacciones_id, crearReacciones, actualizarReacciones, eliminarReacciones} from '../controllers/controlador_reacciones.js'
@@ -309,6 +310,12 @@ router.get('/publicacionesForo/:id', getPublicacionesForos_id)
 router.post('/publicacionesForo', crearPublicacionesForo)
 router.put('/publicacionesForo/:id', actualizarPublicacionesForo)
 router.delete('/publicacionesForo/:id', eliminarPublicacionesForo)
+
+router.get('/categoriasForo', getCategoriasForo)
+router.get('/categoriasForo/:id', getCategoriasForo_id)
+router.post('/categoriasForo', crearCategoriasForo)
+router.put('/categoriasForo/:id', actualizarCategoriasForo)
+router.delete('/categoriasForo/:id', eliminarCategoriasForo)
 
 router.post('/registro', registro)
 
