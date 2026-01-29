@@ -20,7 +20,7 @@ import { JWT_SECRET, pool } from '../config.js';
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import session from 'express-session';
-
+import logger from '../controllers/controlador_logs.js';
 
 const router = Router()
 
@@ -68,7 +68,8 @@ export const requireAuth = (req, res, next) => {
 
 // Ruta raíz - redirige al login
 router.get('/', (req, res) => {
-  res.redirect('/login');
+  logger.info('Acceso a la ruta principal');
+  res.send('hola ceda el foro');
 });
 
 const sanitize = (str) => {
@@ -76,36 +77,49 @@ const sanitize = (str) => {
   return str.trim();
 };
 
+
 // Ruta de login - CON PROTECCIÓN
 router.get('/login', (req, res) => {
-  // Verificar si req.session existe antes de acceder a sus propiedades
   if (req.session && req.session.user) {
+    logger.info({ 
+      userId: req.session.user.id,
+      action: 'redirect_authenticated_user'
+    }, 'Usuario autenticado redirigido');
     return res.redirect('/home');
   }
-  res.render('login', { error: null });
+  
+  logger.debug({ action: 'render_login_page' }, 'Renderizando login');
+  res.render('login', { error: null });
 });
 
 // Procesar login CON BASE DE DATOS
 router.post('/login', async (req, res) => {
-     const email = sanitize(req.body.email);
-    const password = sanitize(req.body.password);
+  const email = sanitize(req.body.email);
+  const password = sanitize(req.body.password);
 
   try {
-    console.log('Intento de login:', email);
+    logger.info({ 
+      email, // Se sanitizará automáticamente
+      action: 'login_attempt'
+    }, 'Intento de login');
     
     // Validar credenciales en la base de datos
     const user = await authenticateUser(email, password);
 
     if (user && user.blocked) {
-      console.log('Acceso denegado: usuario bloqueado', email);
-      return res.status(401).json({ error: 'Usuario o contraseña incorrectos, excediste el maximo permitido' });
+      logger.warn({ 
+        userId: user.id,
+        action: 'login_blocked'
+      }, 'Usuario bloqueado intentó acceder');
+      
+      return res.status(401).json({ 
+        error: 'Usuario o contraseña incorrectos, excediste el maximo permitido' 
+      });
     }
 
     if (user) {
-      // Actualizar último login
       await updateLastLogin(user.id);
 
-      // Guardar información del usuario en sesión
       req.session.user = {
         id: user.id,
         email: user.email,
@@ -114,7 +128,6 @@ router.post('/login', async (req, res) => {
         tipo_usuario: user.tipo_usuario
       };
 
-      // Generar JWT con datos esenciales
       const token = jwt.sign({
         id: user.id,
         email: user.email,
@@ -123,33 +136,49 @@ router.post('/login', async (req, res) => {
         tipo_usuario: user.tipo_usuario
       }, JWT_SECRET, { expiresIn: '8h' });
 
-      // Enviar JWT en cookie httpOnly
       res.cookie('token', token, {
         httpOnly: true,
-        secure: false, // cambiar a true en producción con HTTPS
+        secure: false,
         sameSite: 'lax',
-        maxAge: 8 * 60 * 60 * 1000 // 8 horas
+        maxAge: 8 * 60 * 60 * 1000
       });
 
-      console.log('Login exitoso para:', user.email);
-      //return res.redirect('/principal');
-      // Devolver datos del usuario (sin password) para que el frontend pueda almacenarlos si lo requiere
-      return res.status(200).json({ message: 'Login exitoso', user: {
-        id: user.id,
-        email: user.email,
-        nombre: user.nombre,
-        apellido: user.apellido,
-        tipo_usuario: user.tipo_usuario
-      } })
+      logger.info({ 
+        userId: user.id,
+        tipo_usuario: user.tipo_usuario,
+        action: 'login_success'
+      }, 'Login exitoso');
+      
+      return res.status(200).json({ 
+        message: 'Login exitoso', 
+        user: {
+          id: user.id,
+          email: user.email,
+          nombre: user.nombre,
+          apellido: user.apellido,
+          tipo_usuario: user.tipo_usuario
+        } 
+      });
+    } else {
+     
+      
+      return res.status(401).json({ 
+        error: 'Usuario o contraseña incorrectos' 
+      });
     }
     
-  // Credenciales incorrectas
-  console.log('Login fallido para:', email);
- return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
-    
   } catch (error) {
-    console.error('Error en login:', error);
-    res.render('login', { error: 'Error del sistema. Intente más tarde.' });
+    logger.error({ 
+      err: {
+        message: error.message,
+        name: error.name
+      },
+      action: 'login_error'
+    }, 'Error en login');
+    
+    return res.status(500).json({ 
+      error: 'Error interno del servidor' 
+    });
   }
 });
 

@@ -7,6 +7,8 @@ import { fileURLToPath } from 'url'
 import indexRoutes from './routes/index_routes.js'
 import { PORT, JWT_COOKIE } from './config.js'
 import morgan from 'morgan'
+//import logger from './logger.js'
+import logger from './controllers/controlador_logs.js'
 
 const app = express()
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -90,4 +92,4 @@ app.use('/api', indexRoutes)
 app.use(express.static(join(__dirname, 'public')))
 
 app.listen(PORT)
-console.log('Servidor escuchando en el puerto', PORT)
+logger.info(`Servidor escuchando en el puerto ${PORT}`)
