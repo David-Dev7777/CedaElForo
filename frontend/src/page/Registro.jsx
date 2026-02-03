@@ -115,10 +115,11 @@ function Registro() {
 
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label htmlFor="nombre" className="block text-sm font-medium text-gray-600 mb-1">
               Nombre
             </label>
             <input
+              id='nombre'
               name="userName"
               value={form.userName}
               onChange={handleChange}
@@ -128,10 +129,11 @@ function Registro() {
 
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label htmlFor="apellido" className="block text-sm font-medium text-gray-600 mb-1">
               Apellido
             </label>
             <input
+              id='apellido'
               name="apellido"
               value={form.apellido}
               onChange={handleChange}
@@ -141,10 +143,11 @@ function Registro() {
 
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-600 mb-1">
               Email
             </label>
             <input
+              id='email'
               name="email"
               type="email"
               value={form.email}
@@ -155,10 +158,11 @@ function Registro() {
 
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label htmlFor="contrasena" className="block text-sm font-medium text-gray-600 mb-1">
               Contraseña
             </label>
             <input
+              id='contrasena'
               name="password"
               type="password"
               autoComplete="new-password"
@@ -170,10 +174,11 @@ function Registro() {
 
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label htmlFor="confirmarcontrasena" className="block text-sm font-medium text-gray-600 mb-1">
               Confirmar contraseña
             </label>
             <input
+              id='confirmarcontrasena'
               name="password2"
               type="password"
               autoComplete="new-password"

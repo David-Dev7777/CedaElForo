@@ -50,18 +50,18 @@ export default function ResetPassword(){
         <h2 className="text-2xl font-bold text-center mb-4">Restablecer contraseña</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Correo</label>
-            <input value={email} readOnly className="w-full px-3 py-2 border rounded bg-gray-100" />
+            <label htmlFor="correo" className="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+            <input id='correo' value={email} readOnly className="w-full px-3 py-2 border rounded bg-gray-100" />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nueva contraseña</label>
-            <input type="password" autoComplete="new-password" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Nueva contraseña" />
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Nueva contraseña</label>
+            <input id='password' type="password" autoComplete="new-password" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Nueva contraseña" />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar contraseña</label>
-            <input type="password" autoComplete="new-password" value={password2} onChange={e => setPassword2(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Repite la contraseña" />
+            <label htmlFor="conformarcontrasena" className="block text-sm font-medium text-gray-700 mb-1">Confirmar contraseña</label>
+            <input id='conformarcontrasena' type="password" autoComplete="new-password" value={password2} onChange={e => setPassword2(e.target.value)} className="w-full px-3 py-2 border rounded" placeholder="Repite la contraseña" />
           </div>
 
           {message && <p className="text-green-600 text-sm">{message}</p>}

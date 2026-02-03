@@ -168,7 +168,7 @@ export default function AdminUsuarios() {
           nombre: form.nombre,
           apellido: form.apellido,
           tipo_usuario: form.tipo_usuario,
-          activo: form.activo === true || form.activo === "true",
+          activo: String(form.activo) === "true",
         };
 
         const res = await fetch(`${API}/api/usuarios/${editId}`, {
@@ -194,7 +194,7 @@ export default function AdminUsuarios() {
         nombre: form.nombre,
         apellido: form.apellido,
         tipo_usuario: form.tipo_usuario,
-        activo: form.activo === true || form.activo === "true",
+        activo: String(form.activo) === "true",
       };
 
       const res = await fetch(`${API}/api/usuarios`, {
@@ -346,8 +346,9 @@ export default function AdminUsuarios() {
 
           <form onSubmit={crearOActualizar} className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
             <div className="md:col-span-1">
-              <label className="text-xs text-gray-600 font-semibold">Nombre</label>
+              <label htmlFor="nombre" className="text-xs text-gray-600 font-semibold">Nombre</label>
               <input
+                id="nombre"
                 name="nombre"
                 value={form.nombre}
                 onChange={handleChange}
@@ -357,8 +358,9 @@ export default function AdminUsuarios() {
             </div>
 
             <div className="md:col-span-1">
-              <label className="text-xs text-gray-600 font-semibold">Apellido</label>
+              <label htmlFor="apellido" className="text-xs text-gray-600 font-semibold">Apellido</label>
               <input
+                id="apellido"
                 name="apellido"
                 value={form.apellido}
                 onChange={handleChange}
@@ -368,8 +370,9 @@ export default function AdminUsuarios() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="text-xs text-gray-600 font-semibold">Email</label>
+              <label htmlFor="email" className="text-xs text-gray-600 font-semibold">Email</label>
               <input
+                id="email"
                 name="email"
                 value={form.email}
                 onChange={handleChange}
@@ -393,8 +396,9 @@ export default function AdminUsuarios() {
             </div>
 
             <div className="md:col-span-1">
-              <label className="text-xs text-gray-600 font-semibold">Rol</label>
+              <label htmlFor="tipo_usuario" className="text-xs text-gray-600 font-semibold">Rol</label>
               <select
+                id="tipo_usuario"
                 name="tipo_usuario"
                 value={form.tipo_usuario}
                 onChange={handleChange}
@@ -406,13 +410,13 @@ export default function AdminUsuarios() {
             </div>
 
             <div className="md:col-span-6 flex items-center justify-between gap-3 mt-2">
-              <label className="flex items-center gap-2 text-sm text-gray-700">
+              <label htmlFor="checkbox" className="flex items-center gap-2 text-sm text-gray-700">
                 <input
+                  id="checkbox"
                   type="checkbox"
                   checked={!!form.activo}
                   onChange={(e) => setForm({ ...form, activo: e.target.checked })}
-                />
-                Activo
+                />Activo
               </label>
 
               <button
