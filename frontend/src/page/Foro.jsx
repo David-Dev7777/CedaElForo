@@ -486,9 +486,9 @@ export default function Foro() {
       setContenido("");
       setShowNew(false);
       await loadAll();
-    } catch (e2) {
-      console.error("crearPublicacion error:", e2);
-      setError(`No se pudo publicar: ${e2.message}`);
+    } catch (error) {
+      console.error("crearPublicacion error:", error);
+      setError(`No se pudo publicar: ${error.message}`);
     } finally {
       setBusy(false);
     }
@@ -690,9 +690,9 @@ export default function Foro() {
       setCatColor("#FF9FF3");
       setCatActiva(true);
       await loadAll();
-    } catch (e2) {
-      console.error("crearCategoria error:", e2);
-      setError(`No se pudo crear categoría: ${e2.message}`);
+    } catch (error) {
+      console.error("crearCategoria error:", error);
+      setError(`No se pudo crear categoría: ${error.message}`);
     } finally {
       setBusy(false);
     }
@@ -882,8 +882,9 @@ export default function Foro() {
               <h3 className="font-bold text-gray-900 mb-3">Agregar nueva categoría</h3>
               <form onSubmit={crearCategoria} className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
                 <div className="md:col-span-1">
-                  <label className="text-xs text-gray-600 font-semibold">Nombre</label>
+                  <label htmlFor="nombre" className="text-xs text-gray-600 font-semibold">Nombre</label>
                   <input
+                    id="nombre"
                     value={catNombre}
                     onChange={(e) => setCatNombre(e.target.value)}
                     placeholder="Ej: General"
@@ -892,8 +893,9 @@ export default function Foro() {
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="text-xs text-gray-600 font-semibold">Descripción</label>
+                  <label htmlFor="descripcion" className="text-xs text-gray-600 font-semibold">Descripción</label>
                   <input
+                    id="descripcion"
                     value={catDesc}
                     onChange={(e) => setCatDesc(e.target.value)}
                     placeholder="Ej: Temas generales del foro"
@@ -903,8 +905,9 @@ export default function Foro() {
 
                 <div className="md:col-span-1 flex items-center gap-3">
                   <div>
-                    <label className="text-xs text-gray-600 font-semibold">Color</label>
+                    <label htmlFor="color" className="text-xs text-gray-600 font-semibold">Color</label>
                     <input
+                      id="color"
                       type="color"
                       value={catColor}
                       onChange={(e) => setCatColor(e.target.value)}
@@ -913,8 +916,7 @@ export default function Foro() {
                   </div>
 
                   <label className="flex items-center gap-2 text-sm text-gray-700 mt-5">
-                    <input type="checkbox" checked={catActiva} onChange={(e) => setCatActiva(e.target.checked)} />
-                    Activa
+                    <input type="checkbox" checked={catActiva} onChange={(e) => setCatActiva(e.target.checked)} />Activa
                   </label>
 
                   <button

@@ -239,16 +239,13 @@ function Feriados() {
 
               <div className="mt-4 flex flex-wrap gap-2 text-xs text-gray-600">
                 <span className="inline-flex items-center gap-2">
-                  <span className="w-3 h-3 rounded bg-red-600 inline-block" />
-                  Feriado
+                  <span className="w-3 h-3 rounded bg-red-600 inline-block" />Feriado
                 </span>
                 <span className="inline-flex items-center gap-2">
-                  <span className="w-3 h-3 rounded border border-gray-300 inline-block" />
-                  Día normal
+                  <span className="w-3 h-3 rounded border border-gray-300 inline-block" />Día normal
                 </span>
                 <span className="inline-flex items-center gap-2">
-                  <span className="w-3 h-3 rounded border border-blue-200 inline-block" />
-                  Hoy
+                  <span className="w-3 h-3 rounded border border-blue-200 inline-block" />Hoy
                 </span>
               </div>
             </SoftCard>
@@ -323,8 +320,7 @@ function Feriados() {
                     type="checkbox"
                     checked={soloIrrenunciables}
                     onChange={(e) => setSoloIrrenunciables(e.target.checked)}
-                  />
-                  Solo irrenunciables
+                  />Solo irrenunciables
                 </label>
 
                 <div className="flex gap-2 flex-wrap">
