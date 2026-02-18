@@ -5,6 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node backend/src/index.js",
     "dev": "node --watch backend/src/index.js",
     "build:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
     "sonar": "sonar-scanner"
