@@ -1,9 +1,21 @@
 import{pool} from '../config.js'
 
 export const getPublicacionesForo = async(req, res) => {
-    const {rows} = await pool.query('SELECT * FROM publicaciones_foro') // constante de tipo await para obtener todos los usuarios
-   
-    res.json(rows);
+  try {
+    const { rows } = await pool.query(`
+      SELECT 
+        pf.*,
+        u.nombre,
+        u.apellido,
+        u.tipo_usuario
+      FROM publicaciones_foro pf
+      LEFT JOIN usuarios u ON pf.usuario_id = u.id
+    `)
+    res.json(rows)
+  } catch (err) {
+    console.error('Error en getPublicacionesForo:', err)
+    res.status(500).json({ error: 'Error al obtener publicaciones' })
+  }
 }
 
  export const getPublicacionesForos_id = async(req, res) => {

@@ -425,10 +425,9 @@ router.post('/chat-proxy', async (req, res) => {
 })
 
 
-// Ruta para obtener el usuario actual (verifica JWT o sesión)
 router.get('/me', (req, res) => {
   try {
-    // Prioriza token JWT en cookie
+    // 1️⃣ Priorizar JWT en cookie
     const token = req.cookies?.token
     if (token) {
       try {
@@ -436,42 +435,21 @@ router.get('/me', (req, res) => {
         return res.json({ user: payload })
       } catch (e) {
         console.log('JWT inválido en /me:', e.message)
-        // Continuar para revisar sesión
+        // Continuar para fallback a sesión
       }
     }
 
-    // Si hay sesión, devolverla
+    // 2️⃣ Fallback a sesión de express
     if (req.session?.user) {
       return res.json({ user: req.session.user })
     }
 
+    // 3️⃣ No autenticado
     return res.status(401).json({ error: 'No autenticado' })
   } catch (error) {
     console.error('Error en /me:', error)
     return res.status(500).json({ error: 'Error del servidor' })
   }
-})
-
-// Ruta para que el frontend verifique el usuario actual (usa JWT en cookie o fallback a sesión)
-router.get('/me', (req, res) => {
- try {
-   const token = req.cookies?.token
-   if (token) {
-     const payload = jwt.verify(token, JWT_SECRET)
-     return res.json({ user: payload })
-   }
-
-
-   if (req.session && req.session.user) {
-     return res.json({ user: req.session.user })
-   }
-
-
-   return res.status(401).json({ error: 'No autenticado' })
- } catch (err) {
-   console.error('Error en /me:', err.message || err)
-   return res.status(401).json({ error: 'Token inválido o expirado' })
- }
 })
 
 

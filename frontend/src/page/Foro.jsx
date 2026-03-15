@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-const API = import.meta.env?.VITE_API_URL || "http://localhost:4000/api";
+const API = import.meta.env?.VITE_API_URL || "http://localhost:4000";
 
 /**
  * http(): siempre manda cookies y captura JSON o HTML/texto
  */
 async function http(path, options = {}) {
-  const url = `${API}${path}`;
+  const url = `${API}/api${path}`;
   const res = await fetch(url, {
     credentials: "include",
     headers: { "Content-Type": "application/json", ...(options.headers || {}) },
@@ -20,7 +20,7 @@ async function http(path, options = {}) {
   try {
     if (contentType.includes("application/json")) data = await res.json();
     else rawText = await res.text();
-  } catch {}
+  } catch { }
 
   if (!res.ok) {
     const msg =
@@ -109,10 +109,10 @@ function Avatar({ letters }) {
 }
 
 /**
- * Card con “borde suave” (gris clarito) alrededor, SIN poner el background general en gris.
- * - outer: bg-gray-50 (ese borde suave)
- * - inner: bg-white + border
- */
+* Card con “borde suave” (gris clarito) alrededor, SIN poner el background general en gris.
+* - outer: bg-gray-50 (ese borde suave)
+* - inner: bg-white + border
+*/
 function SoftCard({ className = "", innerClassName = "", children }) {
   return (
     <div className={"bg-gray-50 p-1 rounded-3xl " + className}>
@@ -130,7 +130,7 @@ export default function Foro() {
   const [publicaciones, setPublicaciones] = useState([]);
   const [comentarios, setComentarios] = useState([]);
   const [reacciones, setReacciones] = useState([]);
-  const [usuarios, setUsuarios] = useState([]); // ✅ para mostrar nombres en posts/comentarios
+  //const [usuarios, setUsuarios] = useState([]); // ✅ para mostrar nombres en posts/comentarios
 
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -175,33 +175,30 @@ export default function Foro() {
 
   const isAdmin = me?.tipo_usuario === "administrador";
 
-  async function fetchUsuariosSafe() {
-    /**
-     * ✅ FIX: para ciudadanos puede que /usuarios esté restringido.
-     * Intentamos varios endpoints comunes. Si ninguno existe, devolvemos [] sin romper UI.
-     */
-    const candidates = ["/usuarios", "/users", "/usuariosForo", "/usuariosPublicos", "/usuarios/publicos"];
-    for (const path of candidates) {
-      try {
-        const u = await http(path);
-        if (Array.isArray(u)) return u;
-        if (Array.isArray(u?.rows)) return u.rows;
-      } catch {}
-    }
-    return [];
+  /*async function fetchUsuariosSafe() {
+  try {
+  const u = await http("/usuarios");
+  if (Array.isArray(u)) return u;
+  if (Array.isArray(u?.rows)) return u.rows;
+  return [];
+  } catch (err) {
+  // Solo logea, no rompe la UI
+  console.warn("Usuarios no disponibles, continuando sin ellos:", err.message);
+  return [];
   }
+  }*/
 
   const loadAll = async () => {
     setError("");
     setLoading(true);
     try {
-      const [meRes, cat, pub, com, rea, usrs] = await Promise.all([
+      const [meRes, cat, pub, com, rea] = await Promise.all([
         http("/me"),
         http("/categoriasForo"),
-        http("/publicacionesForo"),
+        http("/publicacionesForo"), // ← ya trae nombre, apellido, tipo_usuario
         http("/comentarios"),
         http("/reacciones"),
-        fetchUsuariosSafe(),
+        //  fetchUsuariosSafe() eliminado
       ]);
 
       setMe(meRes?.user || null);
@@ -209,7 +206,7 @@ export default function Foro() {
       setPublicaciones(Array.isArray(pub) ? pub : []);
       setComentarios(Array.isArray(com) ? com : []);
       setReacciones(Array.isArray(rea) ? rea : []);
-      setUsuarios(Array.isArray(usrs) ? usrs : []);
+      // setUsuarios ya no es necesario
     } catch (e) {
       setError(e.message || "Error cargando datos");
       console.error("loadAll error:", e);
@@ -249,13 +246,13 @@ export default function Foro() {
 
   const usersById = useMemo(() => {
     const m = new Map();
-    for (const u of usuarios || []) {
-      if (u?.id != null) m.set(String(u.id), u);
+    for (const pub of publicaciones || []) {
+      if (pub?.usuario_id != null) m.set(String(pub.usuario_id), pub);
     }
     // incluye "me" por si no viene en /usuarios
     if (me?.id != null && !m.has(String(me.id))) m.set(String(me.id), me);
     return m;
-  }, [usuarios, me]);
+  }, [publicaciones, me]);
 
   // ✅ helpers para detectar nombres “embebidos” en publicaciones/comentarios (si el backend ya los manda)
   function pickEmbeddedUserFromEntity(entity) {
@@ -1513,7 +1510,7 @@ export default function Foro() {
               </div>
 
               {/* ✅ FIX: este aviso solo tiene sentido para admin (para que lo arregle en backend).
-                 Para ciudadano NO lo mostramos. */}
+Para ciudadano NO lo mostramos. */}
               {isAdmin && usuarios.length === 0 && (
                 <div className="mt-4 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-xl p-3">
                   Nota: no se encontró endpoint de usuarios ("/usuarios" o "/users"). Por eso, en publicaciones/comentarios

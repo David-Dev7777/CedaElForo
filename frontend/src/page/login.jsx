@@ -4,16 +4,19 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { User } from 'lucide-react';
+import pino from 'pino';
+
 
 
 function LoginForm() {
 
-  const Navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const location = useLocation();
   const resetSuccess = location.state?.resetSuccess;
+  const logger = pino({ level: 'info' });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,50 +28,61 @@ function LoginForm() {
       return;
     }
 
-    
+
 
     const API_URL = 'http://localhost:4000/api/login';
-           try {
-            const response = await axios.post(API_URL, { 
-                email, 
-                password 
-            }, {
-                withCredentials: true 
-            });
+    try {
+      const response = await axios.post(API_URL, {
+        email,
+        password
+      }, {
+        withCredentials: true
+      });
 
-            // Login Exitoso: La cookie JWT ya está guardada por el navegador.
-            console.log(response.data.message);
-            // Guardar userId y userName en localStorage para dependencias como el Foro y notificar a la app
-            if (response.data.user) {
-              try { localStorage.setItem('userId', String(response.data.user.id)) } catch {}
-              try { localStorage.setItem('userName', `${response.data.user.nombre || ''} ${response.data.user.apellido || ''}`.trim()) } catch {}
-            }
-            // Notificar al NavMenu y otras partes que la auth cambió
-            window.dispatchEvent(new Event('auth-changed'))
-            // Redirigir al home público (puedes cambiar a otra ruta protegida si prefieres)
-            Navigate('/')
-        
-
-        } catch (err) {
-            console.error("Error en el login:", err);
-            
-            // 🔥 CAMBIO AQUÍ: Manejar el error JSON enviado por el backend
-            if (err.response && err.response.data && err.response.data.error) {
-                // Captura el mensaje de error que enviamos en el backend (ej: 'Usuario o contraseña incorrectos')
-                setError(err.response.data.error);
-            } else {
-                // Error de red (servidor caído o CORS)
-                setError("Error de conexión. Inténtalo de nuevo.");
-            }
+      // Login Exitoso: La cookie JWT ya está guardada por el navegador.
+      console.log(response.data.message);
+      // Guardar userId y userName en localStorage para dependencias como el Foro y notificar a la app
+      try {
+        if (response.data.user) {
+          localStorage.setItem('userId', String(response.data.user.id));
+          localStorage.setItem(
+            'userName',
+            `${response.data.user.nombre || ''} ${response.data.user.apellido || ''}`.trim()
+          );
         }
-       
+      } catch (e) {
+        console.error("Error guardando datos en localStorage:", e);
+      }
+      // Notificar al NavMenu y otras partes que la auth cambió
+      window.dispatchEvent(new Event('auth-changed'))
+      // Redirigir al home público (puedes cambiar a otra ruta protegida si prefieres)
+      logger.info(
+    { user: response.data.user?.id || null, action: 'login_success' },
+    'Login OK, navegando al home'
+  );
+      navigate('/ley-transito')
+
+
+    } catch (err) {
+      console.error("Error en el login:", err);
+
+      // 🔥 CAMBIO AQUÍ: Manejar el error JSON enviado por el backend
+      if (err.response?.data?.error) {
+        // Captura el mensaje de error que enviamos en el backend (ej: 'Usuario o contraseña incorrectos')
+        setError(err.response.data.error);
+      } else {
+        // Error de red (servidor caído o CORS)
+        setError("Error de conexión. Inténtalo de nuevo.");
+      }
+    }
+
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white-100 p-4">
       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Iniciar Sesión </h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -102,13 +116,13 @@ function LoginForm() {
             />
           </div>
 
-            {resetSuccess && (
-              <p className="text-green-600 text-sm text-center">Contraseña actualizada correctamente. Ya puedes iniciar sesión.</p>
-            )}
+          {resetSuccess && (
+            <p className="text-green-600 text-sm text-center">Contraseña actualizada correctamente. Ya puedes iniciar sesión.</p>
+          )}
 
-            {error && (
-              <p className="text-red-600 text-sm text-center">{error}</p>
-            )}
+          {error && (
+            <p className="text-red-600 text-sm text-center">{error}</p>
+          )}
 
           <div>
             <button

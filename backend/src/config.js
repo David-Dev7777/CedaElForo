@@ -11,5 +11,5 @@ export const pool = new PG.Pool({
   host: process.env.PGHOST,
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
-  port: process.env.PGPORT,
+  port: process.env.PGPORT
 });

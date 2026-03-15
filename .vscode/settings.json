@@ -2,5 +2,23 @@
     "sonarlint.connectedMode.project": {
         "connectionId": "http-localhost-9000-",
         "projectKey": "CedaElForo"
-    }
+    },
+    "sqltools.connections": [
+        {
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "db-cedaelforo.ckjikwmsga6c.us-east-1.rds.amazonaws.com",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "RDS cedaelforo",
+            "database": "postgres",
+            "username": "postgres",
+            "password": "Cedaelforo123"
+        }
+    ]
 }

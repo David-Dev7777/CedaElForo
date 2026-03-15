@@ -5,11 +5,11 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Chatbot from './components/Chatbot'
 
 // Importa tus componentes de página
-import VisorLey from './page/VisorLey.jsx'; 
-import Login from './page/login.jsx'; 
-import  {NavMenu} from'./page/menu.jsx';
+import VisorLey from './page/VisorLey.jsx';
+import Login from './page/login.jsx';
+import { NavMenu } from './page/menu.jsx';
 // Asume que Calendario contiene el DatePickerDropdown
-import Calendario from './page/calendario.jsx'; 
+import Calendario from './page/calendario.jsx';
 import Registro from './page/Registro.jsx'
 import Footer from './components/Footer.jsx';
 import Hero from './components/Hero.jsx';
@@ -27,7 +27,7 @@ const mainNavLinks = [
   { to: "/ley-transito", label: "Ley de Tránsito", isButton: false },
   { to: "/feriados", label: "Feriados Chile", isButton: false },
   { to: "/foro", label: "Foro", isButton: false },
-  { to: "/login", label: "Iniciar sesión", isButton: true , icon: User},
+  { to: "/login", label: "Iniciar sesión", isButton: true, icon: User },
   { to: "/registro", label: "Registro", isButton: false }
 ]
 
@@ -35,48 +35,42 @@ const mainNavLinks = [
 export function App() {
   return (
     <BrowserRouter>
-    <div className="flex flex-col min-h-screen gap-8">
-      {/* Barra de navegación optimizada */}
-      <NavMenu title="Portal Legal" links={mainNavLinks} /> 
+      <div className="flex flex-col min-h-screen gap-8">
+        {/* Barra de navegación optimizada */}
+        <NavMenu title="Portal Legal" links={mainNavLinks} />
 
-      {/* Chatbot global (se carga en todas las vistas) */}
-      <Chatbot />
+        {/* Chatbot global (se carga en todas las vistas) */}
+        <Chatbot />
 
-      {/* Definición de Rutas */}
-      <main className="max-w-6xl mx-auto p-4 pb-20 min-h-screen mt-8">
-        <Routes>
-          {/* Rutas públicas: Home, Login, Registro */}
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/registro" element={<Registro />} />
+        {/* Definición de Rutas */}
+        <main className="max-w-6xl mx-auto p-4 pb-20 min-h-screen mt-8">
+          <Routes>
+            {/* Rutas públicas */}
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<Registro />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* Rutas protegidas (requieren sesión/JWT) */}
-          <Route path="/ley-transito" element={<ProtectedRoute><VisorLey /></ProtectedRoute>} />
-          <Route path="/Feriados.jsx" element={<ProtectedRoute><Feriados /></ProtectedRoute>} /> 
-          <Route path="/foro" element={<ProtectedRoute><Foro /></ProtectedRoute>} />
-          <Route path="/admin" element={<AdminRoute><AdminUsuarios /></AdminRoute>} />
-          {/* puedes añadir más rutas protegidas aquí */}
-          <Route path="/ley-transito" element={<VisorLey />} />
-          <Route path="/feriados" element={<ProtectedRoute><Feriados /></ProtectedRoute >} />
-          <Route path="/foro" element={<Foro />} />
-          <Route path="/login" element={<Login />} /> 
-          <Route path="/registro" element={<Registro />} />
-          <Route path="/politica-privacidad" element={<ProtectedRoute><PoliticaPrivacidad /></ProtectedRoute>} />
-          <Route path="/terminos-uso" element={<ProtectedRoute><TerminosUso /></ProtectedRoute  >} />
-        </Routes>
-      </main>
+            {/* Rutas protegidas */}
+            <Route path="/ley-transito" element={<ProtectedRoute><VisorLey /></ProtectedRoute>} />
+            <Route path="/feriados" element={<ProtectedRoute><Feriados /></ProtectedRoute>} />
+            <Route path="/foro" element={<ProtectedRoute><Foro /></ProtectedRoute>} />
+            <Route path="/admin" element={<AdminRoute><AdminUsuarios /></AdminRoute>} />
+            <Route path="/politica-privacidad" element={<ProtectedRoute><PoliticaPrivacidad /></ProtectedRoute>} />
+            <Route path="/terminos-uso" element={<ProtectedRoute><TerminosUso /></ProtectedRoute>} />
+          </Routes>
+        </main>
 
-      {/* Footer con nombre de la empresa */}
-      <Footer nombreEmpresa="Ceda el Foro" className="mt-12" />
+        {/* Footer con nombre de la empresa */}
+        <Footer nombreEmpresa="Ceda el Foro" className="mt-12" />
 
       </div>
     </BrowserRouter>
   );
 }
-  
-    
-  
+
+
+
 
 
