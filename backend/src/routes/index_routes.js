@@ -187,26 +187,19 @@ router.post('/login', async (req, res) => {
 
 
 
-// Cerrar sesión
 router.get('/logout', (req, res) => {
-  // Limpiar cookie JWT además de destruir la sesión
-  res.clearCookie('token');
+  res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'none' });
   req.session.destroy((err) => {
-    if (err) {
-      console.log('Error al cerrar sesión:', err);
-    }
+    if (err) console.log('Error al cerrar sesión:', err);
     res.redirect('/login');
   });
 });
 
-// POST logout para llamadas fetch desde frontend (devuelve JSON y no redirige)
 router.post('/logout', (req, res) => {
   try {
-    res.clearCookie('token');
+    res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'none' });
     req.session.destroy((err) => {
-      if (err) {
-        console.log('Error al destruir sesión en POST /logout:', err);
-      }
+      if (err) console.log('Error al destruir sesión en POST /logout:', err);
       return res.json({ ok: true });
     });
   } catch (err) {
@@ -214,6 +207,8 @@ router.post('/logout', (req, res) => {
     return res.status(500).json({ error: 'Error cerrando sesión' });
   }
 });
+
+
 // Rutas de gestión de usuarios: solo accesibles por administradores
 router.get('/usuarios', requireAuth, adminOnly, getUsuarios )
 router.get('/usuarios/:id', requireAuth, adminOnly, getUsuario_id)
