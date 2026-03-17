@@ -14,7 +14,8 @@ const app = express()
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 /* --------------- Hardening --------------- */
-app.set('trust proxy', 1)  // ← le dice a Express que confíe en nginx
+app.set('trust proxy', 1)  // ← le dice a Express que confíe en nginx}
+
 // Ocultar X-Powered-By
 app.disable('x-powered-by')
 
@@ -34,7 +35,7 @@ app.use((req, res, next) => {
     "style-src 'self' 'unsafe-inline'; " +
     "img-src 'self' data:; " +
     "font-src 'self'; " +
-    "connect-src 'self' http://localhost:5173 https://35-168-182-117.nip.io; " +
+    "connect-src 'self' http://localhost:5173 https://35-168-182-117.nip.io https://d1ts2muoi5txjt.cloudfront.net; " +
     "frame-ancestors 'none'; " +
     "form-action 'self';"
   )
@@ -59,7 +60,8 @@ app.use((req, res, next) => {
 // CORS restringido
 app.use(cors({
   origin: ['http://localhost:5173',
-    'https://35-168-182-117.nip.io'
+    'https://35-168-182-117.nip.io',
+    'https://d1ts2muoi5txjt.cloudfront.net'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
