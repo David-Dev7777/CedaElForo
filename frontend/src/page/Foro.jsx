@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-const API = import.meta.env?.VITE_API_URL || "http://localhost:4000";
+const API = import.meta.env?.VITE_API_URL || "http://localhost:4000/api";
 
 /**
  * http(): siempre manda cookies y captura JSON o HTML/texto
  */
 async function http(path, options = {}) {
-  const url = `${API}/api${path}`;
+  const url = `${API}${path}`;
   const res = await fetch(url, {
     credentials: "include",
     headers: { "Content-Type": "application/json", ...(options.headers || {}) },
