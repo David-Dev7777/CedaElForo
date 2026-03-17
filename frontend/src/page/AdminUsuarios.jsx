@@ -89,7 +89,7 @@ export default function AdminUsuarios() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/api/usuarios`, { credentials: "include" });
+      const res = await fetch(`${API}/usuarios`, { credentials: "include" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setUsuarios(Array.isArray(data) ? data : []);

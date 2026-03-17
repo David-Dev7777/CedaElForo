@@ -12,7 +12,7 @@ export default function ProtectedRoute({ children }) {
     ;(async () => {
       try {
         const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
-        const res = await fetch(`${API}/api/me`, { credentials: 'include' })
+        const res = await fetch(`${API}/me`, { credentials: 'include' })
         if (!mounted) return
         if (res.ok) {
           setAuthenticated(true)

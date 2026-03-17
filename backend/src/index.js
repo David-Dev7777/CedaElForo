@@ -14,15 +14,10 @@ const app = express()
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 /* --------------- Hardening --------------- */
-
+app.set('trust proxy', 1)  // ← le dice a Express que confíe en nginx
 // Ocultar X-Powered-By
 app.disable('x-powered-by')
 
-// Manejo seguro de errores JSON (evita stacktraces)
-app.use((err, req, res, next) => {
-  console.error(err)
-  res.status(500).json({ message: 'Error interno del servidor' })
-})
 
 /* --------------- View engine --------------- */
 app.set('view engine', 'ejs')
@@ -39,7 +34,7 @@ app.use((req, res, next) => {
     "style-src 'self' 'unsafe-inline'; " +
     "img-src 'self' data:; " +
     "font-src 'self'; " +
-    "connect-src 'self' http://localhost:5173; " +
+    "connect-src 'self' http://localhost:5173 https://35-168-182-117.nip.io; " +
     "frame-ancestors 'none'; " +
     "form-action 'self';"
   )
@@ -63,7 +58,9 @@ app.use((req, res, next) => {
 
 // CORS restringido
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173',
+    'https://35-168-182-117.nip.io'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -80,8 +77,8 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: false, // true en producción HTTPS
-    sameSite: 'lax'
+    secure: true, // true en producción HTTPS
+    sameSite: 'none'
   }
 }))
 
@@ -93,3 +90,9 @@ app.use(express.static(join(__dirname, 'public')))
 
 app.listen(PORT)
 logger.info(`Servidor escuchando en el puerto ${PORT}`)
+
+// Manejo seguro de errores JSON (evita stacktraces)
+app.use((err, req, res, next) => {
+  console.error(err)
+  res.status(500).json({ message: 'Error interno del servidor' })
+})

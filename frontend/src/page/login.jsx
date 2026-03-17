@@ -8,6 +8,7 @@ import pino from 'pino';
 
 
 
+
 function LoginForm() {
 
   const navigate = useNavigate();
@@ -30,9 +31,9 @@ function LoginForm() {
 
 
 
-    const API_URL = 'http://localhost:4000/api/login';
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/login';
     try {
-      const response = await axios.post(API_URL, {
+      const response = await axios.post(`${API_URL}/login`, {
         email,
         password
       }, {

@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 export default function Chatbot() {
   const mountedRef = useRef(false)
   const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
-  const WEBHOOK = `${API}/api/chat-proxy`
+  const WEBHOOK = `${API}/chat-proxy`
 
 
   useEffect(() => {
