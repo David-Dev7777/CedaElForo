@@ -56,10 +56,11 @@ const VisorLey = () => {
     const [error, setError] = useState(null);
     const [q, setQ] = useState("");
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
     useEffect(() => {
         const obtenerLey = async () => {
             try {
-                const response = await axios.get('http://localhost:4000/api/ley-transito');
+                const response = await axios.get(`${API_URL}/`);
                 setLey(response.data);
             } catch (err) {
                 console.error("Error conectando al backend:", err);

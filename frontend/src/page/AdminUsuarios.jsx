@@ -171,7 +171,7 @@ export default function AdminUsuarios() {
           activo: String(form.activo) === "true",
         };
 
-        const res = await fetch(`${API}/api/usuarios/${editId}`, {
+        const res = await fetch(`${API}/usuarios/${editId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -197,7 +197,7 @@ export default function AdminUsuarios() {
         activo: String(form.activo) === "true",
       };
 
-      const res = await fetch(`${API}/api/usuarios`, {
+      const res = await fetch(`${API}/usuarios`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -225,7 +225,7 @@ export default function AdminUsuarios() {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/api/usuarios/${id}`, { method: "DELETE", credentials: "include" });
+      const res = await fetch(`${API}/usuarios/${id}`, { method: "DELETE", credentials: "include" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       await fetchUsuarios();
     } catch (err) {
@@ -242,7 +242,7 @@ export default function AdminUsuarios() {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/api/usuarios/${id}/unlock`, { method: "POST", credentials: "include" });
+      const res = await fetch(`${API}/usuarios/${id}/unlock`, { method: "POST", credentials: "include" });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.message || `HTTP ${res.status}`);
