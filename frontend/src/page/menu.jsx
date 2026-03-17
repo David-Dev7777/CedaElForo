@@ -1,4 +1,10 @@
 // NavMenu.jsx
+// menu.jsx — agrega esto al inicio del archivo
+// v2
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom'
 import { Link } from 'react-router-dom'; // Importamos Link para navegación SPA
@@ -16,7 +22,7 @@ export const NavMenu = ({ title, links = [] }) => {
         let mounted = true
         const check = async () => {
             try {
-                const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+                const API = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'
                 const res = await fetch(`${API}/me`, { credentials: 'include' })
                 if (!mounted) return
                 if (res.ok) {
@@ -122,8 +128,8 @@ export const NavMenu = ({ title, links = [] }) => {
                                 <button
                                     onClick={async () => {
                                         try {
-                                            const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
-                                            await fetch(`${API}/api/logout`, { method: 'POST', credentials: 'include' })
+                                            const API = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'
+                                            await fetch(`${API}/logout`, { method: 'POST', credentials: 'include' })
                                         } catch (err) {
                                             // ignorar error
                                         }
