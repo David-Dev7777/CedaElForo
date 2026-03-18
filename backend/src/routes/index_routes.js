@@ -1,20 +1,27 @@
 import { Router } from 'express'
 import axios from 'axios'
 import { XMLParser } from 'fast-xml-parser'
-import he from 'he'; 
+import he from 'he';
+import Groq from 'groq-sdk' 
 
+//controladores
 import {registro} from '../controllers/controlador_registro.js'
 import{getCategoriasForo, getCategoriasForo_id, crearCategoriasForo, eliminarCategoriasForo, actualizarCategoriasForo} from '../controllers/controlador_categoriasForo.js'  
 import{getUsuario_id, getUsuarios, crearUsuario, eliminarUsuario, actualizarUsuario} from '../controllers/controlador_usuarios.js'
 import{getComentarios, getComentarios_id, crearComentarios, actualizarComentarios, eliminarComentarios} from '../controllers/controlador_comentarios.js'
 import{getReacciones, getReacciones_id, crearReacciones, actualizarReacciones, eliminarReacciones} from '../controllers/controlador_reacciones.js'
 import{getPublicacionesForo, getPublicacionesForos_id, crearPublicacionesForo, actualizarPublicacionesForo, eliminarPublicacionesForo} from '../controllers/controlador_publicacionesForo.js'
+import { chatProxy } from '../controllers/controlador_chat.js'
+
+//middlewares
 import{validarCuerpo} from '../middlewares/validar_schema.js'
+
+// Modelos
 import { modelo_usuario } from '../models/schema_usuario.js'
-
-
 import{authenticateUser, updateLastLogin} from '../models/authModel.js'
-//import{requireAuth} from '../middlewares/Aut_jwt.js'
+
+// Función de decodificación recursiva
+import { decodeJsonStrings } from '../utils/decodeJsonStrings.js'
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET, pool } from '../config.js';
 import bcrypt from 'bcryptjs'
@@ -343,28 +350,6 @@ router.delete('/categoriasForo/:id', eliminarCategoriasForo)
 
 router.post('/registro', registro)
 
-// Función de decodificación recursiva
-function decodeJsonStrings(obj) {
-    if (typeof obj !== 'object' || obj === null) {
-        // Si no es un objeto (ni un array) o es null, devuelve el valor.
-        // Si es una cadena, la decodifica.
-        return typeof obj === 'string' ? he.decode(obj) : obj;
-    }
-
-    if (Array.isArray(obj)) {
-        // Si es un array, recorre cada elemento.
-        return obj.map(item => decodeJsonStrings(item));
-    }
-
-    // Si es un objeto, recorre todas sus claves.
-    const newObj = {};
-    for (const key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            newObj[key] = decodeJsonStrings(obj[key]);
-        }
-    }
-    return newObj;
-}
 
 
 router.get('/ley-transito', async (req, res) => {
@@ -395,29 +380,8 @@ router.get('/ley-transito', async (req, res) => {
 });
 
 
-// Proxy para evitar CORS al llamar al webhook de n8n desde el frontend
-router.post('/chat-proxy', async (req, res) => {
-  try {
-    const webhook = process.env.N8N_WEBHOOK_URL || 'https://davidlozano31.app.n8n.cloud/webhook/9b3ba493-e926-4d2e-8921-679cbe6b84fd/chat'
-    const response = await axios.post(webhook, req.body, {
-      headers: { 'Content-Type': 'application/json' },
-      timeout: 45000,
-    })
-
-    // Reenviamos la respuesta del webhook al frontend
-    return res.status(response.status).json(response.data)
-  } catch (err) {
-    console.error('Error proxying chat webhook:', err?.message || err)
-    if (err.response) {
-      // El webhook respondió con un error
-      return res.status(err.response.status).json(err.response.data)
-    }
-    if (err.code === 'ECONNABORTED') {
-      return res.status(504).json({ error: 'Timeout contacting webhook' })
-    }
-    return res.status(502).json({ error: 'Error forwarding request to webhook' })
-  }
-})
+// chat proxy para responder preguntas sobre la ley de tránsito usando Groq y el texto de la ley obtenido desde la BCN
+router.post('/chat-proxy', chatProxy)
 
 
 router.get('/me', (req, res) => {

@@ -130,7 +130,7 @@ export default function Foro() {
   const [publicaciones, setPublicaciones] = useState([]);
   const [comentarios, setComentarios] = useState([]);
   const [reacciones, setReacciones] = useState([]);
-  //const [usuarios, setUsuarios] = useState([]); // ✅ para mostrar nombres en posts/comentarios
+  const [usuarios, setUsuarios] = useState([]); // ✅ para mostrar nombres en posts/comentarios
 
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
