@@ -29,7 +29,7 @@ const highlightText = (text, query, activeIndex, matchIndexRef) => {
                 className={`px-0.5 rounded transition-colors duration-200 ${isActive
                     ? 'bg-orange-400 text-white'
                     : 'bg-yellow-200 text-gray-900'
-                }`}
+                    }`}
             >
                 {part}
             </mark>
@@ -92,6 +92,28 @@ function countMatches(data, q) {
     return count;
 }
 
+const descargarPDF = async (titulo, nombre, texto) => {
+    try {
+        const API = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'
+        const response = await fetch(`${API}/ley-transito/pdf`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ titulo, nombre, texto })
+        })
+        if (!response.ok) throw new Error('Error generando PDF')
+        const blob = await response.blob()
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `ley18290-art${nombre || 'articulo'}.pdf`
+        a.click()
+        URL.revokeObjectURL(url)
+    } catch (err) {
+        console.error('Error descargando PDF:', err)
+    }
+}
+
 // =================================================================
 // COMPONENTE RECURSIVO
 // =================================================================
@@ -114,13 +136,23 @@ const ContenidoRecursivo = ({ data, query, activeMatch, matchIndexRef, depth = 0
                         className={`${isTopLevel
                             ? 'mb-2 rounded-xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200'
                             : 'mb-3'
-                        }`}
+                            }`}
                     >
                         {titulo && isTopLevel && (
-                            <div className="bg-gradient-to-r from-blue-900 to-blue-800 px-5 py-3">
+                            <div className="bg-gradient-to-r from-blue-900 to-blue-800 px-5 py-3 flex items-center justify-between gap-3">
                                 <h3 className="text-base font-bold text-white uppercase tracking-wider">
                                     {highlightText(titulo, query, activeMatch, matchIndexRef)}
                                 </h3>
+                                <button
+                                    onClick={() => descargarPDF(titulo, nombre, texto)}
+                                    title="Descargar artículo en PDF"
+                                    className="flex-shrink-0 flex items-center gap-1.5 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-all duration-150"
+                                >
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    PDF
+                                </button>
                             </div>
                         )}
 
@@ -259,81 +291,81 @@ const VisorLey = () => {
     matchIndexRef.current = 0;
 
     return (
-    <div className="min-h-screen bg-slate-100 font-sans">
+        <div className="min-h-screen bg-slate-100 font-sans">
 
-        {/* Header estático — solo título y badges */}
-        <div className="bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 text-white">
-            <div className="max-w-5xl mx-auto px-6 py-8">
-                <div className="flex items-center gap-4">
-                    <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
-                        <svg className="w-6 h-6 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p className="text-blue-300 text-xs font-semibold uppercase tracking-widest mb-0.5">República de Chile</p>
-                        <h1 className="text-xl font-bold leading-tight">Ley de Tránsito N° 18.290</h1>
-                    </div>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-4">
-                    <span className="bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
-                        Ley N° 18.290
-                    </span>
-                    <span className="bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
-                        Publicación: {fecha}
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        {/* Buscador sticky */}
-        <div className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
-            <div className="max-w-5xl mx-auto px-6 py-2.5">
-                <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2">
-                    <svg className="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <input
-                        ref={searchRef}
-                        type="text"
-                        value={searchInput}
-                        onChange={e => setSearchInput(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Buscar en la ley... (ej: multa, licencia, velocidad)"
-                        className="flex-1 text-slate-800 placeholder-slate-400 text-sm focus:outline-none bg-transparent py-0.5"
-                    />
-                    {query && totalMatches > 0 && (
-                        <div className="flex items-center gap-1">
-                            <span className="text-xs text-slate-500 whitespace-nowrap bg-white px-2 py-1 rounded-lg border border-slate-200">
-                                {activeMatch + 1} / {totalMatches}
-                            </span>
-                            <button onClick={handlePrev} className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                </svg>
-                            </button>
-                            <button onClick={handleNext} className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <button onClick={() => setSearchInput('')} className="p-1.5 hover:bg-red-50 rounded-lg text-slate-400 hover:text-red-500 transition-colors">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+            {/* Header estático — solo título y badges */}
+            <div className="bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 text-white">
+                <div className="max-w-5xl mx-auto px-6 py-8">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+                            <svg className="w-6 h-6 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
                         </div>
-                    )}
-                    {query && totalMatches === 0 && (
-                        <span className="text-xs text-red-400 whitespace-nowrap">Sin resultados</span>
-                    )}
+                        <div>
+                            <p className="text-blue-300 text-xs font-semibold uppercase tracking-widest mb-0.5">República de Chile</p>
+                            <h1 className="text-xl font-bold leading-tight">Ley de Tránsito N° 18.290</h1>
+                        </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                        <span className="bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+                            Ley N° 18.290
+                        </span>
+                        <span className="bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+                            Publicación: {fecha}
+                        </span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        {/* Contenido */}
-        <div className="max-w-5xl mx-auto px-6 py-8" ref={contentRef}>
-        
+            {/* Buscador sticky */}
+            <div className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
+                <div className="max-w-5xl mx-auto px-6 py-2.5">
+                    <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2">
+                        <svg className="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input
+                            ref={searchRef}
+                            type="text"
+                            value={searchInput}
+                            onChange={e => setSearchInput(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder="Buscar en la ley... (ej: multa, licencia, velocidad)"
+                            className="flex-1 text-slate-800 placeholder-slate-400 text-sm focus:outline-none bg-transparent py-0.5"
+                        />
+                        {query && totalMatches > 0 && (
+                            <div className="flex items-center gap-1">
+                                <span className="text-xs text-slate-500 whitespace-nowrap bg-white px-2 py-1 rounded-lg border border-slate-200">
+                                    {activeMatch + 1} / {totalMatches}
+                                </span>
+                                <button onClick={handlePrev} className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors">
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                    </svg>
+                                </button>
+                                <button onClick={handleNext} className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors">
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <button onClick={() => setSearchInput('')} className="p-1.5 hover:bg-red-50 rounded-lg text-slate-400 hover:text-red-500 transition-colors">
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        )}
+                        {query && totalMatches === 0 && (
+                            <span className="text-xs text-red-400 whitespace-nowrap">Sin resultados</span>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Contenido */}
+            <div className="max-w-5xl mx-auto px-6 py-8" ref={contentRef}>
+
                 {query && (
                     <div className="mb-4 flex items-center gap-2">
                         <span className="text-sm text-slate-500">

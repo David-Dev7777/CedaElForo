@@ -14,6 +14,7 @@ import{getUsuario_id, getUsuarios, crearUsuario, eliminarUsuario, actualizarUsua
 import{getComentarios, getComentarios_id, crearComentarios, actualizarComentarios, eliminarComentarios} from '../controllers/controlador_comentarios.js'
 import{getReacciones, getReacciones_id, crearReacciones, actualizarReacciones, eliminarReacciones} from '../controllers/controlador_reacciones.js'
 import{getPublicacionesForo, getPublicacionesForos_id, crearPublicacionesForo, actualizarPublicacionesForo, eliminarPublicacionesForo} from '../controllers/controlador_publicacionesForo.js'
+import { descargarArticuloPDF } from '../controllers/controlador_pdf.js'
 import { chatProxy } from '../controllers/controlador_chat.js'
 
 //middlewares
@@ -363,6 +364,9 @@ router.post('/registro', registro)
 
 // chat proxy para responder preguntas sobre la ley de tránsito usando Groq y el texto de la ley obtenido desde la BCN
 router.post('/chat-proxy', chatProxy)
+
+// PDF
+router.post('/ley-transito/pdf', descargarArticuloPDF)
 
 
 router.get('/me', (req, res) => {
