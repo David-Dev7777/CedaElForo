@@ -92,27 +92,7 @@ function countMatches(data, q) {
     return count;
 }
 
-const descargarPDF = async (titulo, nombre, texto) => {
-    try {
-        const API = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'
-        const response = await fetch(`${API}/ley-transito/pdf`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ titulo, nombre, texto })
-        })
-        if (!response.ok) throw new Error('Error generando PDF')
-        const blob = await response.blob()
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `ley18290-art${nombre || 'articulo'}.pdf`
-        a.click()
-        URL.revokeObjectURL(url)
-    } catch (err) {
-        console.error('Error descargando PDF:', err)
-    }
-}
+
 
 // =================================================================
 // COMPONENTE RECURSIVO
@@ -130,6 +110,33 @@ const ContenidoRecursivo = ({ data, query, activeMatch, matchIndexRef, depth = 0
                 const texto = item.Texto ? getValue(item.Texto) : null;
                 const isTopLevel = depth === 0;
 
+                const descargarPDF = async () => {
+                    try {
+                        const API = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'
+                        const response = await fetch(`${API}/ley-transito/pdf`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                titulo,
+                                nombre,
+                                texto,
+                                hijos: item.EstructurasFuncionales || null  // enviar hijos
+                            })
+                        })
+                        if (!response.ok) throw new Error('Error generando PDF')
+                        const blob = await response.blob()
+                        const url = URL.createObjectURL(blob)
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.download = `ley18290-art${nombre || 'articulo'}.pdf`
+                        a.click()
+                        URL.revokeObjectURL(url)
+                    } catch (err) {
+                        console.error('Error descargando PDF:', err)
+                    }
+                }
+
                 return (
                     <article
                         key={idx}
@@ -144,7 +151,7 @@ const ContenidoRecursivo = ({ data, query, activeMatch, matchIndexRef, depth = 0
                                     {highlightText(titulo, query, activeMatch, matchIndexRef)}
                                 </h3>
                                 <button
-                                    onClick={() => descargarPDF(titulo, nombre, texto)}
+                                    onClick={descargarPDF}
                                     title="Descargar artículo en PDF"
                                     className="flex-shrink-0 flex items-center gap-1.5 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-all duration-150"
                                 >
