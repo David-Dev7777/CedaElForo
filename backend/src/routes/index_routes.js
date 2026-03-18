@@ -76,12 +76,18 @@ export const requireAuth = (req, res, next) => {
   res.redirect('/login');
 };
 
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
 // Ruta raíz - redirige al login
 router.get('/', (req, res) => {
-  logger.info('Acceso a la ruta principal');
-  res.send('hola ceda el foro');
-});
-
+  try {
+    const ley = JSON.parse(readFileSync(join(__dirname, '../data/ley18290.json'), 'utf-8'))
+    res.json(ley)
+  } catch (err) {
+    console.error('Error leyendo ley18290.json:', err)
+    res.status(500).json({ error: 'Error al cargar la ley' })
+  }
+})
 const sanitize = (str) => {
   if (!str || typeof str !== 'string') return '';
   return str.trim();
@@ -353,19 +359,6 @@ router.delete('/categoriasForo/:id', eliminarCategoriasForo)
 
 router.post('/registro', registro)
 
-
-
-const __dirname = dirname(fileURLToPath(import.meta.url))
-
-router.get('/', (req, res) => {
-  try {
-    const ley = JSON.parse(readFileSync(join(__dirname, '../data/ley18290.json'), 'utf-8'))
-    res.json(ley)
-  } catch (err) {
-    console.error('Error leyendo ley18290.json:', err)
-    res.status(500).json({ error: 'Error al cargar la ley' })
-  }
-})
 
 
 // chat proxy para responder preguntas sobre la ley de tránsito usando Groq y el texto de la ley obtenido desde la BCN
