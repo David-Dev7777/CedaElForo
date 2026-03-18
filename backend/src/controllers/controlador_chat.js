@@ -1,8 +1,10 @@
 import Groq from 'groq-sdk'
-import axios from 'axios'
-import { XMLParser } from 'fast-xml-parser'
-import { decodeJsonStrings } from '../utils/decodeJsonStrings.js' 
+import { readFileSync } from 'fs'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
+import { decodeJsonStrings } from '../utils/decodeJsonStrings.js'
 
+const __dirname = dirname(fileURLToPath(import.meta.url))
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
 function extraerTexto(obj, texto = []) {
@@ -24,18 +26,9 @@ function extraerTexto(obj, texto = []) {
   return texto
 }
 
-let leyCache = null
-
-async function obtenerTextoLey() {
-  if (leyCache) return leyCache
-  const url = 'https://www.leychile.cl/Consulta/obtxml?opt=7&idNorma=1007469'
-  const response = await axios.get(url)
-  const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_' })
-  const jsonData = parser.parse(response.data)
-  const cleanJson = decodeJsonStrings(jsonData.Norma)
-  leyCache = extraerTexto(cleanJson).join('\n')
-  return leyCache
-}
+// Cargar la ley desde archivo local una sola vez
+const leyJson = JSON.parse(readFileSync(join(__dirname, '../data/ley18290.json'), 'utf-8'))
+const leyTexto = extraerTexto(leyJson).join('\n')
 
 export const chatProxy = async (req, res) => {
   try {
@@ -44,8 +37,6 @@ export const chatProxy = async (req, res) => {
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: 'messages es requerido y debe ser un array' })
     }
-
-    const textoLey = await obtenerTextoLey()
 
     const completion = await groq.chat.completions.create({
       model: 'llama3-8b-8192',
@@ -57,7 +48,7 @@ Responde SOLO en base al siguiente texto de la ley. Si la respuesta no está en 
 Responde siempre en español. No inventes información.
 
 TEXTO DE LA LEY:
-${textoLey.substring(0, 6000)}`
+${leyTexto.substring(0, 6000)}`
         },
         ...messages
       ],
@@ -67,7 +58,7 @@ ${textoLey.substring(0, 6000)}`
 
     res.json({ reply: completion.choices[0].message.content })
   } catch (err) {
-  console.error('Error chat-proxy:', err.message, err.stack)
-  res.status(500).json({ error: 'Error al procesar la consulta' })
-}
+    console.error('Error chat-proxy:', err.message)
+    res.status(500).json({ error: 'Error al procesar la consulta' })
+  }
 }
