@@ -27,7 +27,7 @@ function extraerTexto(obj, texto = []) {
 }
 
 // Cargar la ley desde archivo local una sola vez
-const leyJson = JSON.parse(readFileSync(join(__dirname, '../data/ley18290.json'), 'utf-8'))
+const leyJson = JSON.parse(readFileSync(join(__dirname, '../data/ley18290_limpia.json'), 'utf-8'))
 const leyTexto = extraerTexto(leyJson).join('\n')
 
 export const chatProxy = async (req, res) => {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import ModalPDF from '../components/ModalPDF'
 import axios from 'axios';
 import he from 'he';
 
@@ -98,44 +99,29 @@ function countMatches(data, q) {
 // COMPONENTE RECURSIVO
 // =================================================================
 const ContenidoRecursivo = ({ data, query, activeMatch, matchIndexRef, depth = 0 }) => {
+    const [modalItem, setModalItem] = useState(null)
+
     if (!data) return null;
     const itemsToProcess = data.EstructuraFuncional || data;
     const items = Array.isArray(itemsToProcess) ? itemsToProcess : [itemsToProcess].filter(Boolean);
 
     return (
         <>
+            {modalItem && (
+                <ModalPDF
+                    item={modalItem.item}
+                    titulo={modalItem.titulo}
+                    nombre={modalItem.nombre}
+                    texto={modalItem.texto}
+                    onClose={() => setModalItem(null)}
+                />
+            )}
+
             {items.map((item, idx) => {
                 const titulo = item.Metadatos?.TituloParte ? getValue(item.Metadatos.TituloParte) : null;
                 const nombre = item.Metadatos?.NombreParte ? getValue(item.Metadatos.NombreParte) : null;
                 const texto = item.Texto ? getValue(item.Texto) : null;
                 const isTopLevel = depth === 0;
-
-                const descargarPDF = async () => {
-                    try {
-                        const API = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'
-                        const response = await fetch(`${API}/ley-transito/pdf`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'include',
-                            body: JSON.stringify({
-                                titulo,
-                                nombre,
-                                texto,
-                                hijos: item.EstructurasFuncionales || null  // enviar hijos
-                            })
-                        })
-                        if (!response.ok) throw new Error('Error generando PDF')
-                        const blob = await response.blob()
-                        const url = URL.createObjectURL(blob)
-                        const a = document.createElement('a')
-                        a.href = url
-                        a.download = `ley18290-art${nombre || 'articulo'}.pdf`
-                        a.click()
-                        URL.revokeObjectURL(url)
-                    } catch (err) {
-                        console.error('Error descargando PDF:', err)
-                    }
-                }
 
                 return (
                     <article
@@ -143,23 +129,13 @@ const ContenidoRecursivo = ({ data, query, activeMatch, matchIndexRef, depth = 0
                         className={`${isTopLevel
                             ? 'mb-2 rounded-xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200'
                             : 'mb-3'
-                            }`}
+                        }`}
                     >
                         {titulo && isTopLevel && (
                             <div className="bg-gradient-to-r from-blue-900 to-blue-800 px-5 py-3 flex items-center justify-between gap-3">
                                 <h3 className="text-base font-bold text-white uppercase tracking-wider">
                                     {highlightText(titulo, query, activeMatch, matchIndexRef)}
                                 </h3>
-                                <button
-                                    onClick={descargarPDF}
-                                    title="Descargar artículo en PDF"
-                                    className="flex-shrink-0 flex items-center gap-1.5 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-all duration-150"
-                                >
-                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                    PDF
-                                </button>
                             </div>
                         )}
 
@@ -172,13 +148,25 @@ const ContenidoRecursivo = ({ data, query, activeMatch, matchIndexRef, depth = 0
 
                         <div className={isTopLevel ? 'p-5' : ''}>
                             {nombre && (
-                                <div className="flex items-baseline gap-2 mb-2">
-                                    <span className="text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 whitespace-nowrap">
-                                        Art.
-                                    </span>
-                                    <p className="text-sm font-semibold text-slate-700">
-                                        {highlightText(nombre, query, activeMatch, matchIndexRef)}
-                                    </p>
+                                <div className="flex items-center justify-between gap-2 mb-2">
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 whitespace-nowrap">
+                                            Art.
+                                        </span>
+                                        <p className="text-sm font-semibold text-slate-700">
+                                            {highlightText(nombre, query, activeMatch, matchIndexRef)}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => setModalItem({ item, titulo, nombre, texto })}
+                                        title="Descargar artículo en PDF"
+                                        className="flex-shrink-0 flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-600 text-xs font-medium px-2.5 py-1 rounded-lg transition-all duration-150"
+                                    >
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                        PDF
+                                    </button>
                                 </div>
                             )}
 

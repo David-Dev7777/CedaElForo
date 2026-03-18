@@ -82,7 +82,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 // Ruta raíz - redirige al login
 router.get('/', (req, res) => {
   try {
-    const ley = JSON.parse(readFileSync(join(__dirname, '../data/ley18290.json'), 'utf-8'))
+    const ley = JSON.parse(readFileSync(join(__dirname, '../data/ley18290_limpia.json'), 'utf-8'))
     res.json(ley)
   } catch (err) {
     console.error('Error leyendo ley18290.json:', err)
