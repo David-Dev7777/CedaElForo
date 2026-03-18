@@ -3,6 +3,9 @@ import axios from 'axios'
 import { XMLParser } from 'fast-xml-parser'
 import he from 'he';
 import Groq from 'groq-sdk' 
+import { readFileSync } from 'fs'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
 
 //controladores
 import {registro} from '../controllers/controlador_registro.js'
@@ -352,32 +355,17 @@ router.post('/registro', registro)
 
 
 
-router.get('/ley-transito', async (req, res) => {
-    try {
-        const url = 'https://www.leychile.cl/Consulta/obtxml?opt=7&idNorma=1007469';
-        
-        // 1. Consumir la API (XML)
-        const response = await axios.get(url);
-        const xmlData = response.data;
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
-        // 2. Convertir XML a JSON
-        const parser = new XMLParser({
-            ignoreAttributes: false,
-            attributeNamePrefix: "@_" 
-        });
-        const jsonData = parser.parse(xmlData);
-
-        // 3. ✨ NUEVO PASO: Decodificar todas las cadenas de texto en el JSON
-        const cleanJsonData = decodeJsonStrings(jsonData.Norma);
-
-        // 4. Responder al frontend con JSON limpio
-        res.json(cleanJsonData);
-
-    } catch (error) {
-        console.error('Error al obtener la ley:', error);
-        res.status(500).json({ error: 'Error al obtener la información de la BCN' });
-    }
-});
+router.get('/', (req, res) => {
+  try {
+    const ley = JSON.parse(readFileSync(join(__dirname, '../data/ley18290.json'), 'utf-8'))
+    res.json(ley)
+  } catch (err) {
+    console.error('Error leyendo ley18290.json:', err)
+    res.status(500).json({ error: 'Error al cargar la ley' })
+  }
+})
 
 
 // chat proxy para responder preguntas sobre la ley de tránsito usando Groq y el texto de la ley obtenido desde la BCN
