@@ -67,7 +67,7 @@ ${textoLey.substring(0, 6000)}`
 
     res.json({ reply: completion.choices[0].message.content })
   } catch (err) {
-    console.error('Error chat-proxy:', err)
-    res.status(500).json({ error: 'Error al procesar la consulta' })
-  }
+  console.error('Error chat-proxy:', err.message, err.stack)
+  res.status(500).json({ error: 'Error al procesar la consulta' })
+}
 }
